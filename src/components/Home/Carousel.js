@@ -49,38 +49,35 @@ function Carousel({ images }) {
                   )}
                   <Wrapper>
                     <Content>
-                      {width <= 600 && (
+                      {width <= 600 && width >= 400 && (
                         <p>
                           {item.title.english !== null
                             ? item.title.english.length > CLIPSIZE
-                              ? item.title.english.substring(0, CLIPSIZE) + "..."
+                              ? item.title.english.substring(0, CLIPSIZE) +
+                                "..."
                               : item.title.english
                             : item.title.romaji.length > CLIPSIZE
                             ? item.title.romaji.substring(0, CLIPSIZE) + "..."
                             : item.title.romaji}
-
                         </p>
                       )}
-                      {width > 600 && width <= 1000 &&  (
+                      {width > 600 && width <= 1100 && (
                         <p>
-                         {item.title.english !== null
-                          ? item.title.english.length > CLIPSIZE
-                            ? item.title.english.substring(0, CLIPSIZE) + "..."
-                            : item.title.english
-                          : item.title.romaji.length > 35
-                          ? item.title.romaji.substring(0, CLIPSIZE) + "..."
-                          : item.title.romaji}
-
+                          {item.title.english !== null
+                            ? item.title.english.length > CLIPSIZE
+                              ? item.title.english.substring(0, CLIPSIZE) +
+                                "..."
+                              : item.title.english
+                            : item.title.romaji.length > 35
+                            ? item.title.romaji.substring(0, CLIPSIZE) + "..."
+                            : item.title.romaji}
                         </p>
                       )}
-                      {width > 1000 && (
+                      {width > 1100 && (
                         <p>
-                         {item.title.english !== null
+                          {item.title.english !== null
                             ? item.title.english
-                          : item.title.romaji
-
-                        }
-
+                            : item.title.romaji}
                         </p>
                       )}
 

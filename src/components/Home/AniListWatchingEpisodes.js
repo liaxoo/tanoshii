@@ -18,18 +18,22 @@ import "swiper/css";
 import "swiper/css/scrollbar";
 
 function AniListWatchingEpisodes() {
-  const [AniListWatchingEpisodesData, setAniListWatchingEpisodesData] = useState([]);
+  const [
+    AniListWatchingEpisodesData,
+    setAniListWatchingEpisodesData,
+  ] = useState([]);
   const [localData, setLocalData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [change, setChange] = useState(false);
 
-  const userClientId = localStorage.getItem('anilistClientId')
-
-
+  const userClientId = localStorage.getItem("anilistClientId");
 
   function GetAnimeOf() {
     const [loading, setLoading] = useState(true);
-    const [AniListWatchingEpisodesData, setAniListWatchingEpisodesData] = useState([]);
+    const [
+      AniListWatchingEpisodesData,
+      setAniListWatchingEpisodesData,
+    ] = useState([]);
 
     useEffect(() => {
       fetch("https://graphql.anilist.co", {
@@ -113,37 +117,41 @@ function AniListWatchingEpisodes() {
         className="mySwiper"
       >
         <div>
+          {AniListWatchingEpisodesData.data.MediaListCollection.lists[0].entries.map(
+            (item) => (
+              <SwiperSlide>
+                <Wrapper key={item.media.id}>
+                  <IconContext.Provider
+                    value={{
+                      size: "1.2rem",
+                      color: "white",
+                      style: {
+                        verticalAlign: "middle",
+                      },
+                    }}
+                  >
+                    <button className="closeButton" onClick={() => {}}>
+                      <p>
+                        <GetAnimeEpisode
+                          clientId={userClientId}
+                          animeId={item.media.id}
+                        />
+                      </p>
+                    </button>
+                  </IconContext.Provider>
 
-          {AniListWatchingEpisodesData.data.MediaListCollection.lists[0].entries.map((item) => (
-            <SwiperSlide>
-              <Wrapper key={item.media.id}>
-                <IconContext.Provider
-                  value={{
-                    size: "1.2rem",
-                    color: "white",
-                    style: {
-                      verticalAlign: "middle",
-                    },
-                  }}
-                >
-                  <button className="closeButton" onClick={() => {}}>
+                  <Link to={`id/${item.media.idMal}/`}>
+                    <img src={item.media.coverImage.large} alt="" />
+                  </Link>
                   <p>
-                     <GetAnimeEpisode clientId={userClientId} animeId={item.media.id}/>
+                    {item.media.title.english !== null
+                      ? item.media.title.english
+                      : item.media.title.native}
                   </p>
-                  </button>
-                </IconContext.Provider>
-
-                <Link to={`id/${item.media.idMal}/`}>
-                  <img src={item.media.coverImage.large} alt="" />
-                </Link>
-                <p>
-                  {item.media.title.english !== null
-                    ? item.media.title.english
-                    : item.media.title.native}
-                </p>
-              </Wrapper>
-            </SwiperSlide>
-          ))}
+                </Wrapper>
+              </SwiperSlide>
+            )
+          )}
         </div>
       </Swiper>
     );
