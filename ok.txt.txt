@@ -1,0 +1,12 @@
+query {
+  Page(perPage: 10) {
+    mediaList(userId: 5600871, status: CURRENT) {
+      id 
+      media{
+        title {
+          english
+        }
+      }
+    }
+  }
+}
