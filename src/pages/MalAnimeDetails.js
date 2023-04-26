@@ -6,6 +6,10 @@ import AnimeDetailsSkeleton from "../components/skeletons/AnimeDetailsSkeleton";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { searchByIdQuery } from "../hooks/searchQueryStrings";
 
+import { ActionIcon } from "@mantine/core";
+import { FiHeart } from "react-icons/fi";
+
+import { COLORS } from "../styles/colors";
 function MalAnimeDetails() {
   let id = useParams().id;
 
@@ -91,6 +95,16 @@ function MalAnimeDetails() {
                       Watch Dub
                     </Button>
                   )}
+                  <ButtonFavorite
+                    className="outline-favorite"
+                    to={`/play/${malResponse.dubLink}/1`}
+                  >
+                    Favorite{" "}
+                    <FiHeart
+                      color="white"
+                      style={{ marginLeft: COLORS.PADDING }}
+                    />
+                  </ButtonFavorite>
                 </Poster>
                 <div>
                   <h1>{anilistResponse.title.userPreferred}</h1>
@@ -463,6 +477,11 @@ const Poster = styled.div`
     background-color: transparent;
     border: 2px solid #9792cf;
   }
+
+  .outline-favorite {
+    background-color: transparent;
+    border: 2px solid ${COLORS.colorRed};
+  }
 `;
 
 const Button = styled(Link)`
@@ -477,6 +496,33 @@ const Button = styled(Link)`
   position: relative;
   top: -25%;
   white-space: nowrap;
+
+  @media screen and (max-width: 600px) {
+    display: block;
+    width: 100%;
+  }
+`;
+
+const ButtonFavorite = styled(Link)`
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  padding: 1rem 3.4rem;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  background-color: ${COLORS.colorRed};
+  border-color: ${COLORS.colorRed};
+  font-weight: 700;
+  border-radius: 0.4rem;
+  position: relative;
+  top: -25%;
+  white-space: nowrap;
+  transition: ${COLORS.buttonTransition};
+
+  :hover {
+    background-color: ${COLORS.colorRed};
+  }
 
   @media screen and (max-width: 600px) {
     display: block;

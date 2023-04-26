@@ -27,7 +27,7 @@ function AnimeDetails() {
     setLoading(false);
     setAnimeDetails(res.data);
     getLocalStorage(res.data);
-    document.title = res.data[0].gogoResponse.title + " - Miyou"
+    document.title = res.data[0].gogoResponse.title + " - Miyou";
   }
 
   function readMoreHandler() {
@@ -64,7 +64,7 @@ function AnimeDetails() {
                     : "https://cdn.wallpapersafari.com/41/44/6Q9Nwh.jpg"
                 }
                 alt=""
-              />
+              ></Banner>
               <ContentWrapper>
                 <Poster>
                   <img src={animeDetails[0].gogoResponse.image} alt="" />

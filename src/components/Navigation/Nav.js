@@ -5,7 +5,7 @@ import { FiSearch, FiUser } from "react-icons/fi";
 import { IconContext } from "react-icons";
 import Search from "./Search";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
-import NavAvatar from "../../components/Home/Dropdown"
+import NavAvatar from "../../components/Home/Dropdown";
 
 function Nav() {
   const [isActive, setIsActive] = useState(false);
@@ -19,7 +19,6 @@ function Nav() {
     }
     return true;
   }
-  
 
   return (
     <div>

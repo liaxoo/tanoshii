@@ -9,7 +9,7 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import WatchingEpisodes from "../components/Home/WatchingEpisodes";
 import { TrendingAnimeQuery } from "../hooks/searchQueryStrings";
 import AniListWatchingEpisodes from "../components/Home/AniListWatchingEpisodes";
-import { Menu } from '@headlessui/react'
+import { Menu } from "@headlessui/react";
 
 function Home() {
   const [images, setImages] = useState([]);
@@ -75,7 +75,7 @@ function Home() {
           <div>
             <HeadingWrapper>
               <Heading>
-                <span>Watching on AniList</span>
+                <span>Continue Watching from AniList</span>
               </Heading>
             </HeadingWrapper>
             <AniListWatchingEpisodes />
