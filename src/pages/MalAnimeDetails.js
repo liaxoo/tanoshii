@@ -5,10 +5,14 @@ import styled from "styled-components";
 import AnimeDetailsSkeleton from "../components/skeletons/AnimeDetailsSkeleton";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { searchByIdQuery } from "../hooks/searchQueryStrings";
+import { IconContext } from "react-icons";
 
 import { ActionIcon } from "@mantine/core";
 import { FiHeart } from "react-icons/fi";
-
+import {
+  MalToAniList,
+  AnimeFavoriteStatus,
+} from "../components/Home/AnimeFunctions";
 import { COLORS } from "../styles/colors";
 function MalAnimeDetails() {
   let id = useParams().id;
@@ -20,6 +24,29 @@ function MalAnimeDetails() {
   const [expanded, setExpanded] = useState(false);
   const [dub, setDub] = useState(false);
   const [notAvailable, setNotAvailable] = useState(false);
+
+  function Favorite({ myAnimeListId }) {
+    const anilistId = MalToAniList(myAnimeListId);
+    const loggedIn = localStorage.getItem("anilistClientId");
+    const loggedToken = localStorage.getItem("anilistAccessToken");
+    const isFavorite = AnimeFavoriteStatus({
+      anilistId: myAnimeListId,
+      accessToken: loggedToken,
+    });
+    console.log(isFavorite);
+    return (
+      <IconContext.Provider value={{ style: { padding: "2.5%" } }}>
+        <div>
+          <ButtonFavorite
+            className="outline-favorite"
+            to={`/play/${malResponse.dubLink}/1`}
+          >
+            <FiHeart color="white" size={"100%"} />
+          </ButtonFavorite>
+        </div>
+      </IconContext.Provider>
+    );
+  }
 
   useEffect(() => {
     getInfo();
@@ -73,14 +100,17 @@ function MalAnimeDetails() {
         <Content>
           {anilistResponse !== undefined && (
             <div>
-              <Banner
-                src={
-                  anilistResponse.bannerImage !== null
-                    ? anilistResponse.bannerImage
-                    : "https://cdn.wallpapersafari.com/41/44/6Q9Nwh.jpg"
-                }
-                alt=""
-              />
+              <BannerContainer>
+                <Favorite myAnimeListId={id} />
+                <Banner
+                  src={
+                    anilistResponse.bannerImage !== null
+                      ? anilistResponse.bannerImage
+                      : "https://cdn.wallpapersafari.com/41/44/6Q9Nwh.jpg"
+                  }
+                  alt=""
+                />
+              </BannerContainer>
               <ContentWrapper>
                 <Poster>
                   <img src={anilistResponse.coverImage.extraLarge} alt="" />
@@ -95,16 +125,6 @@ function MalAnimeDetails() {
                       Watch Dub
                     </Button>
                   )}
-                  <ButtonFavorite
-                    className="outline-favorite"
-                    to={`/play/${malResponse.dubLink}/1`}
-                  >
-                    Favorite{" "}
-                    <FiHeart
-                      color="white"
-                      style={{ marginLeft: COLORS.PADDING }}
-                    />
-                  </ButtonFavorite>
                 </Poster>
                 <div>
                   <h1>{anilistResponse.title.userPreferred}</h1>
@@ -240,6 +260,46 @@ function MalAnimeDetails() {
     </div>
   );
 }
+
+const BannerContainer = styled.div`
+  position: relative;
+`;
+
+const ButtonFavorite = styled(Link)`
+  font-size: 1.2rem;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  padding: 1%;
+  position: absolute;
+  margin: 0;
+  color: white;
+  background-color: ${COLORS.colorRed};
+  border-color: ${COLORS.colorRed};
+  border-radius: 0.4rem;
+
+  transition: ${COLORS.buttonTransition};
+
+  :hover {
+    background-color: ${COLORS.colorRed};
+  }
+  margin: 0;
+  width: 35px;
+  height: 35px;
+`;
+
+const Banner = styled.img`
+  width: 100%;
+  height: 20rem;
+  object-fit: cover;
+  border-radius: 0.7rem;
+
+  @media screen and (max-width: 600px) {
+    height: 13rem;
+    border-radius: 0.5rem;
+  }
+`;
 
 const NotAvailable = styled.div`
   display: flex;
@@ -500,45 +560,6 @@ const Button = styled(Link)`
   @media screen and (max-width: 600px) {
     display: block;
     width: 100%;
-  }
-`;
-
-const ButtonFavorite = styled(Link)`
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  padding: 1rem 3.4rem;
-  text-align: center;
-  text-decoration: none;
-  color: white;
-  background-color: ${COLORS.colorRed};
-  border-color: ${COLORS.colorRed};
-  font-weight: 700;
-  border-radius: 0.4rem;
-  position: relative;
-  top: -25%;
-  white-space: nowrap;
-  transition: ${COLORS.buttonTransition};
-
-  :hover {
-    background-color: ${COLORS.colorRed};
-  }
-
-  @media screen and (max-width: 600px) {
-    display: block;
-    width: 100%;
-  }
-`;
-
-const Banner = styled.img`
-  width: 100%;
-  height: 20rem;
-  object-fit: cover;
-  border-radius: 0.7rem;
-
-  @media screen and (max-width: 600px) {
-    height: 13rem;
-    border-radius: 0.5rem;
   }
 `;
 
