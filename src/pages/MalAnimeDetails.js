@@ -15,9 +15,10 @@ import {
 } from "../components/Home/AnimeFunctions";
 import { COLORS } from "../styles/colors";
 function MalAnimeDetails() {
-  let id = useParams().id;
+  const id = useParams().id;
 
   const [loading, setLoading] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
   const { width } = useWindowDimensions();
   const [anilistResponse, setAnilistResponse] = useState();
   const [malResponse, setMalResponse] = useState();
@@ -25,32 +26,65 @@ function MalAnimeDetails() {
   const [dub, setDub] = useState(false);
   const [notAvailable, setNotAvailable] = useState(false);
 
-  function Favorite({ myAnimeListId }) {
-    const anilistId = MalToAniList(myAnimeListId);
-    const loggedIn = localStorage.getItem("anilistClientId");
-    const loggedToken = localStorage.getItem("anilistAccessToken");
-    const isFavorite = AnimeFavoriteStatus({
-      anilistId: myAnimeListId,
-      accessToken: loggedToken,
-    });
-    console.log(isFavorite);
+  function Favorite() {
     return (
-      <IconContext.Provider value={{ style: { padding: "2.5%" } }}>
-        <div>
-          <ButtonFavorite
-            className="outline-favorite"
-            to={`/play/${malResponse.dubLink}/1`}
-          >
-            <FiHeart color="white" size={"100%"} />
-          </ButtonFavorite>
-        </div>
-      </IconContext.Provider>
+      <div>
+        {isFavorite && (
+          <IconContext.Provider value={{ style: { padding: "15%" } }}>
+            <ButtonFavorited
+              className="outline-favorite"
+              onClick={() => {
+                console.log("YAS");
+              }}
+            >
+              <FiHeart color="white" fill="white" size={"100%"} />
+            </ButtonFavorited>
+          </IconContext.Provider>
+        )}
+        {!isFavorite && (
+          <IconContext.Provider value={{ style: { padding: "15%" } }}>
+            <ButtonFavorite
+              className="outline-favorite"
+              to={`/play/${malResponse.dubLink}/1`}
+            >
+              <FiHeart color="white" size={"100%"} />
+            </ButtonFavorite>
+          </IconContext.Provider>
+        )}
+      </div>
     );
   }
 
   useEffect(() => {
     getInfo();
+    isFavorited();
   }, []);
+  const isFavorited = async (props) => {
+    let animeid = id;
+    let response = await axios({
+      url: process.env.REACT_APP_BASE_URL,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+      },
+      data: {
+        query: `
+                query ($idMal: Int) {
+                  Media(idMal: $idMal) {
+                    isFavourite
+                  }
+                }
+              `,
+        variables: { idMal: animeid },
+      },
+    })
+      .then((data) => {
+        setIsFavorite(data.data.data.Media.isFavourite);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   function readMoreHandler() {
     setExpanded(!expanded);
@@ -101,7 +135,7 @@ function MalAnimeDetails() {
           {anilistResponse !== undefined && (
             <div>
               <BannerContainer>
-                <Favorite myAnimeListId={id} />
+                <Favorite />
                 <Banner
                   src={
                     anilistResponse.bannerImage !== null
@@ -271,13 +305,45 @@ const ButtonFavorite = styled(Link)`
   right: 10px;
   display: flex;
   align-items: center;
-  padding: 1%;
+  padding: 0.4%;
+
+  box-sizing: unset;
   position: absolute;
   margin: 0;
   color: white;
-  background-color: ${COLORS.colorRed};
+
   border-color: ${COLORS.colorRed};
   border-radius: 0.4rem;
+  border-style: solid;
+  border-width: 2.5px;
+
+  transition: ${COLORS.buttonTransition};
+
+  :hover {
+    background-color: ${COLORS.colorRed};
+  }
+  margin: 0;
+  width: 35px;
+  height: 35px;
+`;
+
+const ButtonFavorited = styled.button`
+  font-size: 1.2rem;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0.4%;
+  background: ${COLORS.colorRed};
+  box-sizing: unset;
+  position: absolute;
+  margin: 0;
+  color: white;
+
+  border-color: ${COLORS.colorRed};
+  border-radius: 0.4rem;
+  border-style: solid;
+  border-width: 2.5px;
 
   transition: ${COLORS.buttonTransition};
 

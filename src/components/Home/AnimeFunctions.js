@@ -6,8 +6,9 @@ import styled from "styled-components";
 import { ActionIcon } from "@mantine/core";
 import { FiHeart } from "react-icons/fi";
 
-const MalToAniList = (malID) => {
-  const [data, setData] = useState();
+async function Favorite({ malId }) {
+  let [data, setData] = useState();
+
   useEffect(() => {
     fetch("https://graphql.anilist.co", {
       method: "POST",
@@ -27,7 +28,7 @@ const MalToAniList = (malID) => {
         }
     `,
         variables: {
-          malId: malID,
+          malId: malId,
         },
       }),
     })
@@ -38,55 +39,75 @@ const MalToAniList = (malID) => {
       .catch((error) => console.error(error));
   }, []);
   return data;
-};
+}
 
-const AnimeFavoriteStatus = ({ animeId, accessToken }) => {
+async function MalToAniList({ malId }) {
+  let [data, setData] = useState();
+  useEffect(() => {
+    fetch("https://graphql.anilist.co", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        query: `
+        query($malId: Int!) {
+        Media (idMal: $malId, type: ANIME) {
+          id
+          title {
+            english
+          }
+        }
+        }
+    `,
+        variables: {
+          malId: malId,
+        },
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data.data.Media.id);
+      })
+      .catch((error) => console.error(error));
+  }, []);
+  return data;
+}
+
+function AnimeFavoriteStatus({ animeId, accessToken }) {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    const fetchFavoriteStatus = async () => {
-      const query = `
-        query ($animeId: Int!) {
-          Media (id: $animeId) {
-            isFavourite
-          }
-        }
-      `;
-
-      const variables = {
-        animeId: parseInt(animeId),
-      };
-
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-      };
-
-      const endpoint = "https://graphql.anilist.co";
-
+    async function fetchFavoriteStatus() {
       try {
-        const response = await axios.post(
-          endpoint,
-          { query, variables },
-          { headers }
-        );
-
-        if (response.data.errors) {
-          console.error(response.data.errors);
-          setIsFavorite(false);
-        } else {
-          setIsFavorite(response.data.data.Media.isFavourite);
-        }
+        const response = await axios({
+          url: process.env.REACT_APP_BASE_URL,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          data: {
+            query: `
+              query ($idMal: Int) {
+                Media(id: $idMal) {
+                  isFavourite
+                }
+              }
+            `,
+            variables: { idMal: animeId },
+          },
+        });
+        setIsFavorite(response.data.data.Media.isFavourite);
       } catch (error) {
         console.error(error);
-        setIsFavorite(false);
       }
-    };
-
+    }
     fetchFavoriteStatus();
   }, [animeId, accessToken]);
 
   return isFavorite;
-};
+}
 
 export default AnimeFavoriteStatus;
 
