@@ -14,7 +14,10 @@ import {
   AnimeFavoriteStatus,
   Favorite,
 } from "../components/Home/AnimeFunctions";
+
+import SignIn from "../components/NotificationManager";
 import { COLORS } from "../styles/colors";
+
 function MalAnimeDetails() {
   const id = useParams().id;
 
@@ -35,7 +38,7 @@ function MalAnimeDetails() {
             <ButtonFavorited
               className="outline-favorite"
               onClick={() => {
-                console.log("YAS");
+                SignIn();
               }}
             >
               <FiHeart color="white" fill="white" size={"100%"} />
@@ -300,14 +303,14 @@ const BannerContainer = styled.div`
   position: relative;
 `;
 
-const ButtonFavorite = styled(Link)`
+const ButtonFavorite = styled.button`
   font-size: 1.2rem;
   top: 10px;
   right: 10px;
   display: flex;
   align-items: center;
   padding: 0.4%;
-
+  background: transparent;
   box-sizing: unset;
   position: absolute;
   margin: 0;

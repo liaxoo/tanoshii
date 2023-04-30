@@ -1,24 +1,16 @@
 import { MantineProvider } from "@mantine/core";
-
+import { FiAlertCircle } from "react-icons/fi";
 import { Group, Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 
-function Demo() {
-  return (
-    <Group position="center">
-      <Button
-        variant="outline"
-        onClick={() =>
-          notifications.show({
-            title: "Default notification",
-            message: "Hey there, your code is awesome! 🤥",
-          })
-        }
-      >
-        Show notification
-      </Button>
-    </Group>
-  );
+function SignIn() {
+  notifications.show({
+    title: "Error",
+    autoClose: 5000,
+    color: "red",
+    message: "You need to sign in to use this feature. 🤥",
+    icon: <FiAlertCircle />,
+  });
 }
 
-export default { Demo };
+export default SignIn;
