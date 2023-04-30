@@ -69,8 +69,7 @@ function NavAvatar() {
         <Menu.Item
           onClick={logOut}
           color="red"
-          style={{ marginBottom: 0 }}
-          icon={<FiLogOut size={14} />}
+          icon={<FiLogOut size={14} style={{ marginBottom: 0 }} />}
         >
           Log out
         </Menu.Item>
