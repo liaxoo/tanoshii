@@ -12,6 +12,7 @@ import { FiHeart } from "react-icons/fi";
 import {
   MalToAniList,
   AnimeFavoriteStatus,
+  Favorite,
 } from "../components/Home/AnimeFunctions";
 import { COLORS } from "../styles/colors";
 function MalAnimeDetails() {

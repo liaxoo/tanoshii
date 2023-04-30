@@ -1,12 +1,12 @@
-import { Menu } from '@mantine/core';
-import { useState, useEffect } from 'react';
+import { Menu } from "@mantine/core";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FiLogOut, FiSettings, FiInfo } from "react-icons/fi";
 
-import ProfileSkeleton from '../skeletons/ProfileSkeleton';
+import ProfileSkeleton from "../skeletons/ProfileSkeleton";
 
 function NavAvatar() {
-    const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   function Avatar() {
     const [avatarUrl, setAvatarUrl] = useState(null);
@@ -14,8 +14,6 @@ function NavAvatar() {
 
     useEffect(() => {
       async function fetchAvatar() {
-
-
         const response = await fetch(`https://graphql.anilist.co`, {
           method: "POST",
           headers: {
@@ -34,23 +32,17 @@ function NavAvatar() {
           `,
             variables: { userId },
           }),
-        }
-      );
+        });
 
         setLoading(false);
         const { data } = await response.json();
         setAvatarUrl(data.User.avatar.medium);
-
       }
 
       fetchAvatar();
     }, [userId]);
 
-
-    return (
-  loading ? <ProfileSkeleton /> : <img src={avatarUrl} />
-);
-
+    return loading ? <ProfileSkeleton /> : <img src={avatarUrl} />;
   }
   function logOut() {
     localStorage.setItem("anilistAccessToken", "");
@@ -58,24 +50,32 @@ function NavAvatar() {
     window.location.reload();
   }
   return (
+    <Menu shadow="md" width={200}>
+      <Menu.Target>
+        <Right>
+          <Avatar />
+        </Right>
+      </Menu.Target>
 
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <Right>
-              <Avatar />
-            </Right>
-          </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item icon={<FiSettings size={14} style={{ marginBottom: 0 }} />}>
+          Settings
+        </Menu.Item>
+        <Menu.Item icon={<FiInfo size={14} style={{ marginBottom: 0 }} />}>
+          About
+        </Menu.Item>
+        <Menu.Divider />
 
-          <Menu.Dropdown>
-            <Menu.Item icon={<FiSettings size={14} />}>Settings</Menu.Item>
-            <Menu.Item icon={<FiInfo size={14} />}>About</Menu.Item>
-            <Menu.Divider />
-
-            <Menu.Item onClick={logOut}  color="red" icon={<FiLogOut size={14}/>}>Log out</Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-
-
+        <Menu.Item
+          onClick={logOut}
+          color="red"
+          style={{ marginBottom: 0 }}
+          icon={<FiLogOut size={14} />}
+        >
+          Log out
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   );
 }
 
@@ -88,8 +88,6 @@ const Shadow = styled.div`
   background-color: rgba(0, 0, 0, 0.6);
   overflow: hidden;
 `;
-
-
 
 const Right = styled.div`
   display: inline-flex;
@@ -105,4 +103,4 @@ const Right = styled.div`
   }
 `;
 
-export default NavAvatar
+export default NavAvatar;
