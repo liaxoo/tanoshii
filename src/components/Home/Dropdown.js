@@ -4,8 +4,13 @@ import styled from "styled-components";
 import { FiLogOut, FiSettings, FiInfo } from "react-icons/fi";
 
 import ProfileSkeleton from "../skeletons/ProfileSkeleton";
+import { Link } from "react-router-dom";
+import { FiSearch, FiUser } from "react-icons/fi";
+import { IconContext } from "react-icons";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 function NavAvatar() {
+  const { height, width } = useWindowDimensions();
   const [loading, setLoading] = useState(true);
 
   function Avatar() {
@@ -46,14 +51,30 @@ function NavAvatar() {
   }
   function logOut() {
     localStorage.setItem("anilistAccessToken", "");
-    localStorage.setItem("anilistclientId", "");
+    localStorage.setItem("anilistClientId", "");
     window.location.reload();
   }
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
         <Right>
-          <Avatar />
+        {width <= 600 && (
+          <IconContext.Provider
+            value={{
+              size: "1.5rem",
+              style: {
+                verticalAlign: "middle",
+                marginBottom: "0.2rem",
+                marginRight: "0.3rem",
+              },
+            }}
+          >
+            <div>
+                <FiUser style={{ color: "white", marginLeft: 10 }}/>
+            </div>
+          </IconContext.Provider>
+        )}
+        {width >= 601 && <Avatar />}
         </Right>
       </Menu.Target>
 
@@ -94,12 +115,10 @@ const Right = styled.div`
   justify-content: end;
 
   cursor: pointer;
+  border-radius: 60%;
+  /* Remove width and height properties */
+  height: 35px;
 
-  img {
-    border-radius: 60%;
-    /* Remove width and height properties */
-    height: 35px;
-  }
 `;
 
 export default NavAvatar;

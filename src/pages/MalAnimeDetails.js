@@ -7,6 +7,8 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import { searchByIdQuery } from "../hooks/searchQueryStrings";
 import { IconContext } from "react-icons";
 
+import { notifications } from "@mantine/notifications";
+
 import { ActionIcon } from "@mantine/core";
 import { FiHeart } from "react-icons/fi";
 import {
@@ -14,12 +16,11 @@ import {
   AnimeFavoriteStatus,
   Favorite,
 } from "../components/Home/AnimeFunctions";
-
-import SignIn from "../components/NotificationManager";
 import { COLORS } from "../styles/colors";
-
+import SignIn from "../components/NotificationManager";
 function MalAnimeDetails() {
   const id = useParams().id;
+  const anilistId = MalToAniList(id);
 
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -37,9 +38,7 @@ function MalAnimeDetails() {
           <IconContext.Provider value={{ style: { padding: "15%" } }}>
             <ButtonFavorited
               className="outline-favorite"
-              onClick={() => {
-                SignIn();
-              }}
+              onClick={() => toggleFavorite()}
             >
               <FiHeart color="white" fill="white" size={"100%"} />
             </ButtonFavorited>
@@ -49,7 +48,9 @@ function MalAnimeDetails() {
           <IconContext.Provider value={{ style: { padding: "15%" } }}>
             <ButtonFavorite
               className="outline-favorite"
-              to={`/play/${malResponse.dubLink}/1`}
+              onClick={() => {
+                toggleFavorite();
+              }}
             >
               <FiHeart color="white" size={"100%"} />
             </ButtonFavorite>
@@ -65,35 +66,67 @@ function MalAnimeDetails() {
   }, []);
   const isFavorited = async (props) => {
     let animeid = id;
-    let response = await axios({
-      url: process.env.REACT_APP_BASE_URL,
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
-      },
-      data: {
-        query: `
-                query ($idMal: Int) {
-                  Media(idMal: $idMal) {
-                    isFavourite
+    if (localStorage.getItem("anilistClientId")) {
+      let response = await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+        },
+        data: {
+          query: `
+                  query ($idMal: Int) {
+                    Media(idMal: $idMal) {
+                      isFavourite
+                    }
                   }
-                }
-              `,
-        variables: { idMal: animeid },
-      },
-    })
-      .then((data) => {
-        setIsFavorite(data.data.data.Media.isFavourite);
+                `,
+          variables: { idMal: animeid },
+        },
       })
-      .catch((error) => {
-        console.error(error);
-      });
+        .then((data) => {
+          setIsFavorite(data.data.data.Media.isFavourite);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else setIsFavorite(false);
   };
 
   function readMoreHandler() {
     setExpanded(!expanded);
   }
 
+  async function toggleFavorite() {
+    if (localStorage.getItem("anilistClientId")) {
+      let response = await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+        },
+        data: {
+          query: `
+          mutation($animeId: Int) {
+        ToggleFavourite(animeId: $animeId) {
+          anime {
+            edges {
+              id
+            }
+          }
+        }
+      }`,
+          variables: { animeId: 21 },
+        },
+      })
+        .then((data) => {
+          setIsFavorite(!isFavorite);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }
   async function getInfo() {
     if (id === "null") {
       setNotAvailable(true);
@@ -139,7 +172,7 @@ function MalAnimeDetails() {
           {anilistResponse !== undefined && (
             <div>
               <BannerContainer>
-                <Favorite />
+                {localStorage.getItem("anilistClientId") && <Favorite />}
                 <Banner
                   src={
                     anilistResponse.bannerImage !== null
@@ -149,6 +182,7 @@ function MalAnimeDetails() {
                   alt=""
                 />
               </BannerContainer>
+
               <ContentWrapper>
                 <Poster>
                   <img src={anilistResponse.coverImage.extraLarge} alt="" />
@@ -310,16 +344,19 @@ const ButtonFavorite = styled.button`
   display: flex;
   align-items: center;
   padding: 0.4%;
-  background: transparent;
+
   box-sizing: unset;
   position: absolute;
   margin: 0;
   color: white;
 
+  background: transparent;
   border-color: ${COLORS.colorRed};
   border-radius: 0.4rem;
   border-style: solid;
   border-width: 2.5px;
+
+  cursor: pointer;
 
   transition: ${COLORS.buttonTransition};
 
@@ -348,7 +385,7 @@ const ButtonFavorited = styled.button`
   border-radius: 0.4rem;
   border-style: solid;
   border-width: 2.5px;
-
+  cursor: pointer;
   transition: ${COLORS.buttonTransition};
 
   :hover {

@@ -47,9 +47,7 @@ function Nav() {
               <Button onClick={(e) => setIsActive(!isActive)}>
                 <FiSearch />
               </Button>
-              <Link to="/login/" style={{ color: "white", marginLeft: 10 }}>
-                <FiUser />
-              </Link>
+                <NavAvatar />
             </div>
           </IconContext.Provider>
         )}

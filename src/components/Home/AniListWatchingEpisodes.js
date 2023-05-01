@@ -82,79 +82,82 @@ function AniListWatchingEpisodes() {
       return <AnimeCardsSkeleton />;
     }
 
-    return loading ? (
-      <AnimeCardsSkeleton />
-    ) : (
-      <Swiper
-        slidesPerView={7}
-        spaceBetween={35}
-        scrollbar={{
-          hide: false,
-        }}
-        breakpoints={{
-          "@0.00": {
-            slidesPerView: 3,
-            spaceBetween: 15,
-          },
-          "@0.75": {
-            slidesPerView: 4,
-            spaceBetween: 20,
-          },
-          "@1.00": {
-            slidesPerView: 4,
-            spaceBetween: 35,
-          },
-          "@1.30": {
-            slidesPerView: 5,
-            spaceBetween: 35,
-          },
-          "@1.50": {
-            slidesPerView: 7,
-            spaceBetween: 35,
-          },
-        }}
-        modules={[Scrollbar]}
-        className="mySwiper"
-      >
-        <div>
-          {AniListWatchingEpisodesData.data.MediaListCollection.lists[0].entries.map(
-            (item) => (
-              <SwiperSlide>
-                <Wrapper key={item.media.id}>
-                  <IconContext.Provider
-                    value={{
-                      size: "1.2rem",
-                      color: "white",
-                      style: {
-                        verticalAlign: "middle",
-                      },
-                    }}
-                  >
-                    <button className="closeButton" onClick={() => {}}>
-                      <p>
-                        <GetAnimeEpisode
-                          clientId={userClientId}
-                          animeId={item.media.id}
-                        />
-                      </p>
-                    </button>
-                  </IconContext.Provider>
+    return (
+      <div>
+        {loading ? (
+          <AnimeCardsSkeleton />
+        ) : (
+          <Swiper
+            slidesPerView={7}
+            spaceBetween={35}
+            scrollbar={{
+              hide: true,
+            }}
+            breakpoints={{
+              "@0.00": {
+                slidesPerView: 3,
+                spaceBetween: 15,
+              },
+              "@0.75": {
+                slidesPerView: 4,
+                spaceBetween: 20,
+              },
+              "@1.00": {
+                slidesPerView: 4,
+                spaceBetween: 35,
+              },
+              "@1.30": {
+                slidesPerView: 5,
+                spaceBetween: 35,
+              },
+              "@1.50": {
+                slidesPerView: 7,
+                spaceBetween: 35,
+              },
+            }}
+            modules={[Scrollbar]}
+            className="mySwiper"
+          >
+            {AniListWatchingEpisodesData.data.MediaListCollection.lists[0].entries.map(
+              (item, i) => (
+                <SwiperSlide key={i}>
+                  <Wrapper>
+                    <IconContext.Provider
+                      value={{
+                        size: "1.2rem",
+                        color: "white",
+                        style: {
+                          verticalAlign: "middle",
+                        },
+                      }}
+                    >
+                      <button className="closeButton" onClick={() => {}}>
+                        <p>
+                          <GetAnimeEpisode
+                            clientId={userClientId}
+                            animeId={item.media.id}
+                          />
+                        </p>
+                      </button>
+                    </IconContext.Provider>
 
-                  <Link to={`id/${item.media.idMal}/`}>
-                    <img src={item.media.coverImage.large} alt="" />
-                  </Link>
-                  <p>
-                    {item.media.title.english !== null
-                      ? item.media.title.english
-                      : item.media.title.native}
-                  </p>
-                </Wrapper>
-              </SwiperSlide>
-            )
-          )}
-        </div>
-      </Swiper>
+                    <Link to={`id/${item.media.idMal}/`}>
+                      <img src={item.media.coverImage.large} alt="" />
+                    </Link>
+                    <p>
+                      {item.media.title.english !== null
+                        ? item.media.title.english
+                        : item.media.title.native}
+                    </p>
+                  </Wrapper>
+                </SwiperSlide>
+              )
+            )}
+          </Swiper>
+        )}
+      </div>
     );
+
   }
   return (
     <div>

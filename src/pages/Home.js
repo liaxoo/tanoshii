@@ -57,7 +57,7 @@ function Home() {
     <div>
       <HomeDiv>
         <HomeHeading>
-          <span>Recommended</span>
+          <span>Featured</span>
         </HomeHeading>
         {loading && <HomeSkeleton />}
         {!loading && <Carousel images={images} />}
