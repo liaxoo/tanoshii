@@ -20,7 +20,7 @@ import { COLORS } from "../styles/colors";
 import SignIn from "../components/NotificationManager";
 function MalAnimeDetails() {
   const id = useParams().id;
-  const anilistId = MalToAniList(id);
+  const anilistMalToId = MalToAniList(id);
 
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -38,7 +38,7 @@ function MalAnimeDetails() {
           <IconContext.Provider value={{ style: { padding: "15%" } }}>
             <ButtonFavorited
               className="outline-favorite"
-              onClick={() => toggleFavorite()}
+              onClick={() => toggleFavorite({ aniId: anilistMalToId })}
             >
               <FiHeart color="white" fill="white" size={"100%"} />
             </ButtonFavorited>
@@ -49,7 +49,7 @@ function MalAnimeDetails() {
             <ButtonFavorite
               className="outline-favorite"
               onClick={() => {
-                toggleFavorite();
+                toggleFavorite({ aniId: anilistMalToId });
               }}
             >
               <FiHeart color="white" size={"100%"} />
@@ -97,7 +97,7 @@ function MalAnimeDetails() {
     setExpanded(!expanded);
   }
 
-  async function toggleFavorite() {
+  async function toggleFavorite({ aniId }) {
     if (localStorage.getItem("anilistClientId")) {
       let response = await axios({
         url: process.env.REACT_APP_BASE_URL,
@@ -116,7 +116,7 @@ function MalAnimeDetails() {
           }
         }
       }`,
-          variables: { animeId: 21 },
+          variables: { animeId: aniId },
         },
       })
         .then((data) => {
