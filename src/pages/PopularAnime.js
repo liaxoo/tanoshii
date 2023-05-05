@@ -45,7 +45,7 @@ function PopularAnime() {
       {!loading && (
         <Parent>
           <Heading>
-            <span>Popular Anime</span> Results
+            <span>Popular Anime</span>
           </Heading>
           <CardWrapper>
             {animeDetails.map((item, i) => (

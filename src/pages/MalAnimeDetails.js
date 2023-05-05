@@ -14,12 +14,13 @@ import { FiHeart } from "react-icons/fi";
 import {
   MalToAniList,
   AnimeFavoriteStatus,
-  Favorite,
+  Favorite
 } from "../components/Home/AnimeFunctions";
 import { COLORS } from "../styles/colors";
-import SignIn from "../components/NotificationManager";
+import { SignIn, Success, Error } from "../components/NotificationManager";
 function MalAnimeDetails() {
   const id = useParams().id;
+  const watching = false;
   const anilistMalToId = MalToAniList(id);
 
   const [loading, setLoading] = useState(true);
@@ -64,14 +65,14 @@ function MalAnimeDetails() {
     getInfo();
     isFavorited();
   }, []);
-  const isFavorited = async (props) => {
+  const isFavorited = async props => {
     let animeid = id;
     if (localStorage.getItem("anilistClientId")) {
       let response = await axios({
         url: process.env.REACT_APP_BASE_URL,
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`
         },
         data: {
           query: `
@@ -81,13 +82,13 @@ function MalAnimeDetails() {
                     }
                   }
                 `,
-          variables: { idMal: animeid },
-        },
+          variables: { idMal: animeid }
+        }
       })
-        .then((data) => {
+        .then(data => {
           setIsFavorite(data.data.data.Media.isFavourite);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
         });
     } else setIsFavorite(false);
@@ -96,14 +97,13 @@ function MalAnimeDetails() {
   function readMoreHandler() {
     setExpanded(!expanded);
   }
-
   async function toggleFavorite({ aniId }) {
     if (localStorage.getItem("anilistClientId")) {
       let response = await axios({
         url: process.env.REACT_APP_BASE_URL,
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`
         },
         data: {
           query: `
@@ -116,17 +116,24 @@ function MalAnimeDetails() {
           }
         }
       }`,
-          variables: { animeId: aniId },
-        },
+          variables: { animeId: aniId }
+        }
       })
-        .then((data) => {
-          setIsFavorite(!isFavorite);
+        .catch(error => {
+          Error({ text: error });
         })
-        .catch((error) => {
-          console.error(error);
+        .then(data => {
+          if (isFavorite == true) {
+            setIsFavorite(!isFavorite);
+            Success({ text: "Removed from AniList favorites!" });
+          } else {
+            setIsFavorite(!isFavorite);
+            Success({ text: "Added to AniList favorites!" });
+          }
         });
     }
   }
+
   async function getInfo() {
     if (id === "null") {
       setNotAvailable(true);
@@ -137,21 +144,52 @@ function MalAnimeDetails() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
+        Accept: "application/json"
       },
       data: {
         query: searchByIdQuery,
         variables: {
-          id,
-        },
-      },
-    }).catch((err) => {
+          id
+        }
+      }
+    }).catch(err => {
       console.log(err);
     });
+    if (localStorage.getItem("anilistAccessToken")) {
+      let response = await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`
+        },
+        data: {
+          query: `
+          query ($mediaId: Int, $userId: Int) {
+  MediaList(mediaId: $mediaId, userId: $userId) {
+    id
+    status
+    media {
+      title {
+        english
+      }
+    }
+  }
+}
+`,
+          variables: { mediaId: anilistMalToId. userId: localStorage.getItem("anilistClientId") }
+        }
+      })
+        .catch(error => {
+          Error({ text: error });
+        })
+        .then(data => {
+          console.log(data)
+        });
+    }
     setAnilistResponse(aniRes.data.data.Media);
     let malRes = await axios
       .get(`${process.env.REACT_APP_BACKEND_URL}api/getidinfo?malId=${id}`)
-      .catch((err) => {
+      .catch(err => {
         setNotAvailable(true);
       });
     setMalResponse(malRes.data);
@@ -211,7 +249,7 @@ function MalAnimeDetails() {
                     <section>
                       <p
                         dangerouslySetInnerHTML={{
-                          __html: `<span>Plot Summery: </span>${anilistResponse.description}`,
+                          __html: `<span>Plot Summery: </span>${anilistResponse.description}`
                         }}
                       ></p>
                       <button onClick={() => readMoreHandler()}>
@@ -234,7 +272,7 @@ function MalAnimeDetails() {
                       dangerouslySetInnerHTML={{
                         __html:
                           "<span>Plot Summery: </span>" +
-                          anilistResponse.description,
+                          anilistResponse.description
                       }}
                     ></p>
                   )}
@@ -272,7 +310,7 @@ function MalAnimeDetails() {
                         <input
                           type="checkbox"
                           id="switch"
-                          onChange={(e) => setDub(!dub)}
+                          onChange={e => setDub(!dub)}
                         ></input>
                         <span class="indicator"></span>
                         <span class="label">{dub ? "Dub" : "Sub"}</span>

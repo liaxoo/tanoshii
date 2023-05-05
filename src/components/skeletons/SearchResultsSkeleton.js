@@ -9,7 +9,7 @@ function SearchResultsSkeleton({ name }) {
   return (
     <Parent>
       <Heading>
-        <span>{name === undefined ? "Search" : name}</span> Results
+        <span>{name === undefined ? "Search" : name}</span>
       </Heading>
       <CardWrapper>
         {[...Array(40)].map((x, i) => (

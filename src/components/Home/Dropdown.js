@@ -9,6 +9,8 @@ import { FiSearch, FiUser } from "react-icons/fi";
 import { IconContext } from "react-icons";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 
+import { Error, Success } from "../../components/NotificationManager";
+
 function NavAvatar() {
   const { height, width } = useWindowDimensions();
   const [loading, setLoading] = useState(true);
@@ -19,29 +21,36 @@ function NavAvatar() {
 
     useEffect(() => {
       async function fetchAvatar() {
-        const response = await fetch(`https://graphql.anilist.co`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            query: `
-            query ($userId: Int) {
-              User(id: $userId) {
-                avatar {
-                  medium
+        if (!localStorage.getItem("clientAvatar")) {
+          const response = await fetch(`https://graphql.anilist.co`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              query: `
+              query ($userId: Int) {
+                User(id: $userId) {
+                  avatar {
+                    large
+                  }
                 }
               }
-            }
-          `,
-            variables: { userId },
-          }),
-        });
+            `,
+              variables: { userId },
+            }),
+          }).catch((error) => {
+            Error({ text: error });
+          });
 
-        setLoading(false);
-        const { data } = await response.json();
-        setAvatarUrl(data.User.avatar.medium);
+          setLoading(false);
+          const { data } = await response.json();
+          localStorage.setItem("clientAvatar", data.User.avatar.large);
+          setAvatarUrl(data.User.avatar.large);
+        } else {
+          setAvatarUrl(localStorage.getItem("clientAvatar"));
+        }
       }
 
       fetchAvatar();
@@ -52,29 +61,30 @@ function NavAvatar() {
   function logOut() {
     localStorage.setItem("anilistAccessToken", "");
     localStorage.setItem("anilistClientId", "");
+    localStorage.setItem("clientAvatar", "");
     window.location.reload();
   }
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
         <Right>
-        {width <= 600 && (
-          <IconContext.Provider
-            value={{
-              size: "1.5rem",
-              style: {
-                verticalAlign: "middle",
-                marginBottom: "0.2rem",
-                marginRight: "0.3rem",
-              },
-            }}
-          >
-            <div>
-                <FiUser style={{ color: "white", marginLeft: 10 }}/>
-            </div>
-          </IconContext.Provider>
-        )}
-        {width >= 601 && <Avatar />}
+          {width <= 600 && (
+            <IconContext.Provider
+              value={{
+                size: "1.5rem",
+                style: {
+                  verticalAlign: "middle",
+                  marginBottom: "0.2rem",
+                  marginRight: "0.3rem",
+                },
+              }}
+            >
+              <div>
+                <FiUser style={{ color: "white", marginLeft: 10 }} />
+              </div>
+            </IconContext.Provider>
+          )}
+          {width >= 601 && <Avatar />}
         </Right>
       </Menu.Target>
 
@@ -118,7 +128,6 @@ const Right = styled.div`
   border-radius: 60%;
   /* Remove width and height properties */
   height: 35px;
-
 `;
 
 export default NavAvatar;

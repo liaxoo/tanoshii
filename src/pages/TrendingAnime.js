@@ -44,7 +44,7 @@ function TrendingAnime() {
       {!loading && (
         <Parent>
           <Heading>
-            <span>Trending Anime</span> Results
+            <span>Trending Anime</span>
           </Heading>
           <CardWrapper>
             {animeDetails.map((item, i) => (

@@ -43,7 +43,7 @@ function SearchResults() {
       {!loading && (
         <Parent>
           <Heading>
-            <span>Search</span> Results
+            <span>Search Results</span>
           </Heading>
           <CardWrapper>
             {results.map((item, i) => (

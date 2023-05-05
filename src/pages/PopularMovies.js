@@ -26,11 +26,11 @@ function PopularMovies() {
 
   return (
     <div>
-      {loading && <SearchResultsSkeleton name="Popular Movie" />}
+      {loading && <SearchResultsSkeleton name="Popular Movies" />}
       {!loading && (
         <Parent>
           <Heading>
-            <span>Popular Movie</span> Results
+            <span>Popular Movies</span>
           </Heading>
           <CardWrapper>
             {animeDetails.map((item, i) => (
