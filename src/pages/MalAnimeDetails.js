@@ -6,15 +6,16 @@ import AnimeDetailsSkeleton from "../components/skeletons/AnimeDetailsSkeleton";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 import { searchByIdQuery } from "../hooks/searchQueryStrings";
 import { IconContext } from "react-icons";
+import { Menu, Text } from "@mantine/core";
 
 import { notifications } from "@mantine/notifications";
 
 import { ActionIcon } from "@mantine/core";
-import { FiHeart } from "react-icons/fi";
+import { FiHeart, FiEdit } from "react-icons/fi";
 import {
   MalToAniList,
   AnimeFavoriteStatus,
-  Favorite
+  Favorite,
 } from "../components/Home/AnimeFunctions";
 import { COLORS } from "../styles/colors";
 import { SignIn, Success, Error } from "../components/NotificationManager";
@@ -32,11 +33,50 @@ function MalAnimeDetails() {
   const [dub, setDub] = useState(false);
   const [notAvailable, setNotAvailable] = useState(false);
 
+  function ChangeStatus() {
+    return (
+      <Menu shadow="md" width={200}>
+        <Menu.Target>
+          <div>
+            <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
+              <ButtonChange
+                className="outline-favorite"
+                onClick={() => {
+                  Error({ text: "Toggled" });
+                }}
+              >
+                <FiEdit color="white" size={"100%"} />
+              </ButtonChange>
+            </IconContext.Provider>
+          </div>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Item component="a" href="https://mantine.dev">
+            Complete
+          </Menu.Item>
+
+          <Menu.Item component="a" href="https://mantine.dev">
+            Watching
+          </Menu.Item>
+          <Menu.Item
+            color="red"
+            component="a"
+            href="https://mantine.dev"
+            target="_blank"
+          >
+            Planning
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    );
+  }
+
   function Favorite() {
     return (
       <div>
         {isFavorite && (
-          <IconContext.Provider value={{ style: { padding: "15%" } }}>
+          <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
             <ButtonFavorited
               className="outline-favorite"
               onClick={() => toggleFavorite({ aniId: anilistMalToId })}
@@ -46,7 +86,7 @@ function MalAnimeDetails() {
           </IconContext.Provider>
         )}
         {!isFavorite && (
-          <IconContext.Provider value={{ style: { padding: "15%" } }}>
+          <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
             <ButtonFavorite
               className="outline-favorite"
               onClick={() => {
@@ -60,19 +100,18 @@ function MalAnimeDetails() {
       </div>
     );
   }
-
   useEffect(() => {
     getInfo();
     isFavorited();
   }, []);
-  const isFavorited = async props => {
+  const isFavorited = async (props) => {
     let animeid = id;
     if (localStorage.getItem("anilistClientId")) {
       let response = await axios({
         url: process.env.REACT_APP_BASE_URL,
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
         },
         data: {
           query: `
@@ -82,18 +121,17 @@ function MalAnimeDetails() {
                     }
                   }
                 `,
-          variables: { idMal: animeid }
-        }
+          variables: { idMal: animeid },
+        },
       })
-        .then(data => {
+        .then((data) => {
           setIsFavorite(data.data.data.Media.isFavourite);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
         });
     } else setIsFavorite(false);
   };
-
   function readMoreHandler() {
     setExpanded(!expanded);
   }
@@ -103,7 +141,7 @@ function MalAnimeDetails() {
         url: process.env.REACT_APP_BASE_URL,
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
         },
         data: {
           query: `
@@ -116,13 +154,13 @@ function MalAnimeDetails() {
           }
         }
       }`,
-          variables: { animeId: aniId }
-        }
+          variables: { animeId: aniId },
+        },
       })
-        .catch(error => {
+        .catch((error) => {
           Error({ text: error });
         })
-        .then(data => {
+        .then((data) => {
           if (isFavorite == true) {
             setIsFavorite(!isFavorite);
             Success({ text: "Removed from AniList favorites!" });
@@ -133,63 +171,75 @@ function MalAnimeDetails() {
         });
     }
   }
-
   async function getInfo() {
     if (id === "null") {
       setNotAvailable(true);
       return;
     }
+
+    // First axios call to search for media by ID
     let aniRes = await axios({
       url: process.env.REACT_APP_BASE_URL,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json"
+        Accept: "application/json",
       },
       data: {
         query: searchByIdQuery,
         variables: {
-          id
-        }
-      }
-    }).catch(err => {
+          id,
+        },
+      },
+    }).catch((err) => {
       console.log(err);
     });
-    if (localStorage.getItem("anilistAccessToken")) {
-      let response = await axios({
+
+    let watchRes = null;
+    if (anilistMalToId) {
+      console.log(parseInt(anilistMalToId));
+      watchRes = await axios({
         url: process.env.REACT_APP_BASE_URL,
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
         },
         data: {
           query: `
-          query ($mediaId: Int, $userId: Int) {
-  MediaList(mediaId: $mediaId, userId: $userId) {
-    id
-    status
-    media {
-      title {
-        english
-      }
-    }
-  }
-}
-`,
-          variables: { mediaId: anilistMalToId. userId: localStorage.getItem("anilistClientId") }
-        }
+            query ($mediaId: Int, $userId: Int) {
+              MediaList(mediaId: $mediaId, userId: $userId) {
+                id
+                status
+                media {
+                  title {
+                    english
+                  }
+                }
+              }
+            }
+          `,
+          variables: {
+            mediaId: anilistMalToId, // Convert string to integer
+            userId: 5600871,
+          },
+        },
       })
-        .catch(error => {
-          Error({ text: error });
+        .catch((err) => {
+          console.log(err);
         })
-        .then(data => {
-          console.log(data)
+        .then((data) => {
+          console.log(data);
         });
-    }
+    } else;
+
+    // Set state based on both responses
     setAnilistResponse(aniRes.data.data.Media);
+    console.log(watchRes);
     let malRes = await axios
       .get(`${process.env.REACT_APP_BACKEND_URL}api/getidinfo?malId=${id}`)
-      .catch(err => {
+      .catch((err) => {
         setNotAvailable(true);
       });
     setMalResponse(malRes.data);
@@ -210,7 +260,10 @@ function MalAnimeDetails() {
           {anilistResponse !== undefined && (
             <div>
               <BannerContainer>
-                {localStorage.getItem("anilistClientId") && <Favorite />}
+                <ButtonsContainer>
+                  {localStorage.getItem("anilistClientId") && <Favorite />}
+                  <ChangeStatus />
+                </ButtonsContainer>
                 <Banner
                   src={
                     anilistResponse.bannerImage !== null
@@ -249,7 +302,7 @@ function MalAnimeDetails() {
                     <section>
                       <p
                         dangerouslySetInnerHTML={{
-                          __html: `<span>Plot Summery: </span>${anilistResponse.description}`
+                          __html: `<span>Plot Summery: </span>${anilistResponse.description}`,
                         }}
                       ></p>
                       <button onClick={() => readMoreHandler()}>
@@ -272,7 +325,7 @@ function MalAnimeDetails() {
                       dangerouslySetInnerHTML={{
                         __html:
                           "<span>Plot Summery: </span>" +
-                          anilistResponse.description
+                          anilistResponse.description,
                       }}
                     ></p>
                   )}
@@ -310,7 +363,7 @@ function MalAnimeDetails() {
                         <input
                           type="checkbox"
                           id="switch"
-                          onChange={e => setDub(!dub)}
+                          onChange={(e) => setDub(!dub)}
                         ></input>
                         <span class="indicator"></span>
                         <span class="label">{dub ? "Dub" : "Sub"}</span>
@@ -375,17 +428,52 @@ const BannerContainer = styled.div`
   position: relative;
 `;
 
+const ButtonsContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+`;
+
+const ButtonChange = styled.button`
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 0.4%;
+  font-family: "Lexend", sans-serif;
+  box-sizing: unset;
+  color: white;
+
+  background: transparent;
+  border-color: ${COLORS.colorButton};
+  border-radius: 0.4rem;
+  border-style: solid;
+  border-width: 2.5px;
+
+  cursor: pointer;
+
+  transition: ${COLORS.buttonTransition};
+
+  :hover {
+    background-color: ${COLORS.colorButton};
+  }
+  margin: 0;
+  width: 35px;
+  height: 35px;
+  margin-left: 10px;
+`;
+
 const ButtonFavorite = styled.button`
   font-size: 1.2rem;
-  top: 10px;
-  right: 10px;
   display: flex;
   align-items: center;
   padding: 0.4%;
 
   box-sizing: unset;
-  position: absolute;
-  margin: 0;
   color: white;
 
   background: transparent;
@@ -404,26 +492,26 @@ const ButtonFavorite = styled.button`
   margin: 0;
   width: 35px;
   height: 35px;
+  margin-left: 10px;
 `;
 
 const ButtonFavorited = styled.button`
   font-size: 1.2rem;
-  top: 10px;
-  right: 10px;
   display: flex;
   align-items: center;
   padding: 0.4%;
-  background: ${COLORS.colorRed};
+
   box-sizing: unset;
-  position: absolute;
-  margin: 0;
   color: white;
 
+  background-color: ${COLORS.colorRed};
   border-color: ${COLORS.colorRed};
   border-radius: 0.4rem;
   border-style: solid;
   border-width: 2.5px;
+
   cursor: pointer;
+
   transition: ${COLORS.buttonTransition};
 
   :hover {
@@ -432,6 +520,7 @@ const ButtonFavorited = styled.button`
   margin: 0;
   width: 35px;
   height: 35px;
+  margin-left: 10px;
 `;
 
 const Banner = styled.img`

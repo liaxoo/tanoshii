@@ -33,6 +33,7 @@ const MalToAniList = (malID) => {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data.data.Media.id);
         setData(data.data.Media.id);
       })
       .catch((error) => console.error(error));

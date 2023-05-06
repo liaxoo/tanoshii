@@ -44,13 +44,13 @@ function NavAvatar() {
             Error({ text: error });
           });
 
-          setLoading(false);
           const { data } = await response.json();
           localStorage.setItem("clientAvatar", data.User.avatar.large);
           setAvatarUrl(data.User.avatar.large);
         } else {
           setAvatarUrl(localStorage.getItem("clientAvatar"));
         }
+        setLoading(false);
       }
 
       fetchAvatar();

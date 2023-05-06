@@ -1,5 +1,4 @@
 import { MantineProvider } from "@mantine/core";
-import { FiAlertCircle } from "react-icons/fi";
 import { FiAlertCircle, FiCheck, FiX } from "react-icons/fi";
 import { Group, Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -14,18 +13,18 @@ function SignIn() {
     autoClose: 2500,
     color: "red",
     icon: <FiAlertCircle />,
-    styles: theme => ({
+    styles: (theme) => ({
       root: {
-        backgroundColor: COLORS.colorPopup
+        backgroundColor: COLORS.colorPopup,
       },
 
       title: { color: "white" },
       description: { color: COLORS.textColorSecondary },
       closeButton: {
         color: "white",
-        "&:hover": { backgroundColor: COLORS.colorPopupSecondary }
-      }
-    })
+        "&:hover": { backgroundColor: COLORS.colorPopupSecondary },
+      },
+    }),
   });
 }
 
@@ -36,18 +35,18 @@ function Success({ text }) {
     autoClose: 2500,
     color: "green",
     icon: <FiCheck />,
-    styles: theme => ({
+    styles: (theme) => ({
       root: {
-        backgroundColor: COLORS.colorPopup
+        backgroundColor: COLORS.colorPopup,
       },
 
       title: { color: "white" },
       description: { color: COLORS.textColorSecondary },
       closeButton: {
         color: "white",
-        "&:hover": { backgroundColor: COLORS.colorPopupSecondary }
-      }
-    })
+        "&:hover": { backgroundColor: COLORS.colorPopupSecondary },
+      },
+    }),
   });
 }
 function Error({ text }) {
@@ -57,20 +56,18 @@ function Error({ text }) {
     autoClose: 7500,
     color: "red",
     icon: <FiX />,
-    styles: theme => ({
+    styles: (theme) => ({
       root: {
-        backgroundColor: COLORS.colorPopup
+        backgroundColor: COLORS.colorPopup,
       },
 
       title: { color: "white" },
       description: { color: COLORS.textColorSecondary },
       closeButton: {
         color: "white",
-        "&:hover": { backgroundColor: COLORS.colorPopupSecondary }
-      }
-    })
-  });
-}
+        "&:hover": { backgroundColor: COLORS.colorPopupSecondary },
+      },
+    }),
   });
 }
 
