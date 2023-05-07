@@ -11,6 +11,13 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import VideoPlayer from "../components/VideoPlayer/VideoPlayer";
 import ServersList from "../components/WatchAnime/ServersList";
 
+import {
+  MalToAniList,
+  ChangeAnimeEpisode,
+} from "../components/Home/AnimeFunctions";
+
+import { Success } from "../components/NotificationManager";
+
 function WatchAnime() {
   let episodeSlug = useParams().episode;
 
@@ -29,9 +36,11 @@ function WatchAnime() {
   async function getEpisodeLinks() {
     setLoading(true);
     window.scrollTo(0, 0);
+
     let res = await axios.get(
       `${process.env.REACT_APP_BACKEND_URL}api/getlinks?link=/${episodeSlug}`
     );
+
     setLoading(false);
     setEpisodeLinks(res.data);
     setCurrentServer(res.data[0].vidstreaming);

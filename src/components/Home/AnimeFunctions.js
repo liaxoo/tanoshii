@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
 
+import { Error, Success, SignIn } from "../../components/NotificationManager";
+
 import { ActionIcon } from "@mantine/core";
 import { FiHeart } from "react-icons/fi";
 
@@ -91,4 +93,93 @@ const AnimeFavoriteStatus = ({ animeId, accessToken }) => {
 
 export default AnimeFavoriteStatus;
 
-export { MalToAniList, AnimeFavoriteStatus };
+async function ChangeAnimeStatus({ type, animeId }) {
+  if (localStorage.getItem("anilistClientId")) {
+    if (type != "DELETE") {
+      await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+        },
+        data: {
+          query: `
+        mutation($mediaId: Int, $status: MediaListStatus) {
+          SaveMediaListEntry(mediaId: $mediaId, status: $status) {
+            id
+            status
+          }
+        }`,
+          variables: { mediaId: animeId, status: type },
+        },
+      })
+        .catch((error) => {
+          Error({ text: error });
+        })
+        .then((data) => {
+          Success({ text: `Changed status to ${type}.` });
+        });
+      return;
+    } else {
+      await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+        },
+        data: {
+          query: `
+          query($userId: Int, $mediaId: Int) {
+            MediaList(userId: $userId, mediaId: $mediaId) {
+              id
+            }
+          }`,
+          variables: {
+            userId: 5600871,
+            mediaId: 21,
+          },
+        },
+      })
+        .catch((error) => {
+          Error({
+            text:
+              "This anime is currently not one your account. Please change the status.",
+          });
+        })
+        .then((data) => {
+          console.log(data.data.data.MediaList.id);
+        });
+    }
+  } else return SignIn();
+}
+
+async function ChangeAnimeEpisode({ animeId, progress }) {
+  if (localStorage.getItem("anilistClientId")) {
+    await axios({
+      url: process.env.REACT_APP_BASE_URL,
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+      },
+      data: {
+        query: `
+        mutation($mediaId: Int, $progress: Int) {
+    SaveMediaListEntry(mediaId: $mediaId, progress: $progress) {
+      id
+    }
+  }`,
+        variables: { mediaId: animeId, progress: progress },
+      },
+    }).catch((error) => {
+      Error({ text: `there was an error processing your request. ${error}` });
+    });
+  }
+  return;
+}
+
+export {
+  MalToAniList,
+  AnimeFavoriteStatus,
+  ChangeAnimeStatus,
+  ChangeAnimeEpisode,
+};

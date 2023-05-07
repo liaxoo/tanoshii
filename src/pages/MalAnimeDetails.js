@@ -8,14 +8,13 @@ import { searchByIdQuery } from "../hooks/searchQueryStrings";
 import { IconContext } from "react-icons";
 import { Menu, Text } from "@mantine/core";
 
-import { notifications } from "@mantine/notifications";
-
-import { ActionIcon } from "@mantine/core";
 import { FiHeart, FiEdit } from "react-icons/fi";
 import {
   MalToAniList,
   AnimeFavoriteStatus,
   Favorite,
+  ChangeAnimeStatus,
+  ChangeAnimeEpisode,
 } from "../components/Home/AnimeFunctions";
 import { COLORS } from "../styles/colors";
 import { SignIn, Success, Error } from "../components/NotificationManager";
@@ -34,17 +33,13 @@ function MalAnimeDetails() {
   const [notAvailable, setNotAvailable] = useState(false);
 
   function ChangeStatus() {
+    let convertedId = MalToAniList(id);
     return (
       <Menu shadow="md" width={200}>
         <Menu.Target>
           <div>
             <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
-              <ButtonChange
-                className="outline-favorite"
-                onClick={() => {
-                  Error({ text: "Toggled" });
-                }}
-              >
+              <ButtonChange className="outline-favorite" onClick={() => {}}>
                 <FiEdit color="white" size={"100%"} />
               </ButtonChange>
             </IconContext.Provider>
@@ -52,20 +47,45 @@ function MalAnimeDetails() {
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Item component="a" href="https://mantine.dev">
+          <Menu.Item
+            onClick={() =>
+              ChangeAnimeStatus({ type: "COMPLETED", animeId: convertedId })
+            }
+          >
             Complete
           </Menu.Item>
-
-          <Menu.Item component="a" href="https://mantine.dev">
+          <Menu.Item
+            onClick={() =>
+              ChangeAnimeStatus({ type: "CURRENT", animeId: convertedId })
+            }
+          >
             Watching
           </Menu.Item>
           <Menu.Item
-            color="red"
-            component="a"
-            href="https://mantine.dev"
-            target="_blank"
+            onClick={() =>
+              ChangeAnimeStatus({ type: "DROPPED", animeId: convertedId })
+            }
+          >
+            Dropped
+          </Menu.Item>
+          <Menu.Item
+            onClick={() =>
+              ChangeAnimeStatus({ type: "PLANNING", animeId: convertedId })
+            }
           >
             Planning
+          </Menu.Item>
+          <Menu.Item
+            color="red"
+            onClick={() =>
+              ChangeAnimeStatus({ type: "DELETE", animeId: convertedId })
+            }
+          >
+            Delete
+          </Menu.Item>
+
+          <Menu.Item color="red" onClick={() => ChangeAnimeEpisode()}>
+            test
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
@@ -169,7 +189,7 @@ function MalAnimeDetails() {
             Success({ text: "Added to AniList favorites!" });
           }
         });
-    }
+    } else Error({ text: "You must be logged in to use this feature." });
   }
   async function getInfo() {
     if (id === "null") {

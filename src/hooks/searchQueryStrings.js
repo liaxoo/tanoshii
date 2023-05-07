@@ -23,7 +23,7 @@ export let PopularAnimeQuery = `
 				}
 				description
 				episodes
-				
+
 			}
 		}
 	}
@@ -54,7 +54,7 @@ export let TrendingAnimeQuery = `
 				}
 				description
 				episodes
-				
+
 			}
 		}
 	}
@@ -85,7 +85,7 @@ export let top100AnimeQuery = `
 				}
 				description
 				episodes
-				
+
 			}
 		}
 	}
@@ -152,6 +152,7 @@ export let searchByIdQuery = `
 				native
 				userPreferred
 			}
+			id
 			type
 			status
 			genres

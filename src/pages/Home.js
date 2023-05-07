@@ -61,16 +61,18 @@ function Home() {
         </HomeHeading>
         {loading && <HomeSkeleton />}
         {!loading && <Carousel images={images} />}
-        {localStorage.getItem("Watching") && checkSize() && (
-          <div>
-            <HeadingWrapper>
-              <Heading>
-                <span>Continue Watching</span>
-              </Heading>
-            </HeadingWrapper>
-            <WatchingEpisodes />
-          </div>
-        )}
+        {localStorage.getItem("Watching") &&
+          checkSize() &&
+          !localStorage.getItem("anilistAccessToken") && (
+            <div>
+              <HeadingWrapper>
+                <Heading>
+                  <span>Continue Watching</span>
+                </Heading>
+              </HeadingWrapper>
+              <WatchingEpisodes />
+            </div>
+          )}
         {localStorage.getItem("anilistAccessToken") && (
           <div>
             <HeadingWrapper>

@@ -8,6 +8,13 @@ import {
   HiArrowSmRight,
   HiOutlineSwitchHorizontal,
 } from "react-icons/hi";
+
+import { Success } from "../components/NotificationManager";
+import {
+  MalToAniList,
+  ChangeAnimeEpisode,
+} from "../components/Home/AnimeFunctions";
+
 import { IconContext } from "react-icons";
 import WatchAnimeSkeleton from "../components/skeletons/WatchAnimeSkeleton";
 import useWindowDimensions from "../hooks/useWindowDimensions";
@@ -68,6 +75,10 @@ function WatchAnimeV2() {
     document.title = `${aniRes.data.data.Media.title.userPreferred} ${
       res.data.isDub ? "(Dub)" : "(Sub)"
     } EP-${episode} - Miyou`;
+    ChangeAnimeEpisode({
+      animeId: aniRes.data.data.Media.id,
+      progress: res.data.episodeNum,
+    });
     setLoading(false);
   }
 
