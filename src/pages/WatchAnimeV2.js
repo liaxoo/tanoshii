@@ -26,60 +26,57 @@ function WatchAnimeV2() {
   const slug = useParams().slug;
   const episode = useParams().episode;
 
-  const [episodeLinks, setEpisodeLinks] = useState([]);
+  const [episodeLinks, setEpisodeLinks] = useState();
   const [currentServer, setCurrentServer] = useState("");
+  const [downloadLink, setDownloadLink] = useState();
   const [animeDetails, setAnimeDetails] = useState();
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
   const [fullScreen, setFullScreen] = useState(false);
   const [internalPlayer, setInternalPlayer] = useState(true);
-
   useEffect(() => {
     getEpisodeLinks();
   }, [episode]);
 
+  useEffect(() => {
+    console.log(episodeLinks);
+  }, [episodeLinks]);
   async function getEpisodeLinks() {
     setLoading(true);
     window.scrollTo(0, 0);
-    let res = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}api/getmixlinks?id=${slug}&ep=${episode}`
-    );
-    setEpisodeLinks(res.data);
-    setCurrentServer(res.data.gogoLink);
-    if (!res.data.sources) {
-      setInternalPlayer(true);
-    }
-    updateLocalStorage(
-      res.data.animeId,
-      res.data.episodeNum,
-      res.data.mal_id,
-      res.data.isDub
-    );
-    let aniRes = await axios({
-      url: process.env.REACT_APP_BASE_URL,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      data: {
-        query: searchByIdQuery,
-        variables: {
-          id: res.data.mal_id,
+
+    try {
+      let res = await axios.get(
+        `https://api.consumet.org/meta/anilist/watch/${slug}-episode-${episode}`
+      );
+
+      setEpisodeLinks(res.data.sources);
+      setDownloadLink(res.data.download);
+      setCurrentServer(res.data.gogoLink);
+      if (!res.data.sources) {
+        setInternalPlayer(true);
+      }
+      let aniRes = await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-      },
-    }).catch((err) => {
-      console.log(err);
-    });
-    setAnimeDetails(aniRes.data.data.Media);
-    document.title = `${aniRes.data.data.Media.title.userPreferred} ${
-      res.data.isDub ? "(Dub)" : "(Sub)"
-    } EP-${episode} - Miyou`;
-    ChangeAnimeEpisode({
-      animeId: aniRes.data.data.Media.id,
-      progress: res.data.episodeNum,
-    });
-    setLoading(false);
+        data: {
+          query: searchByIdQuery,
+          variables: {
+            id: 50265,
+          },
+        },
+      }).catch((err) => {
+        console.log(err);
+      });
+      setAnimeDetails(aniRes.data.data.Media);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   function fullScreenHandler(e) {
@@ -170,7 +167,7 @@ function WatchAnimeV2() {
                       }}
                     >
                       <a
-                        href={episodeLinks.downloadLink}
+                        href={downloadLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -194,110 +191,17 @@ function WatchAnimeV2() {
 
               <VideoPlayerWrapper>
                 <div>
-                  {internalPlayer && (
+                  {episodeLinks && episodeLinks.length > 0 ? (
                     <VideoPlayer
-                      sources={episodeLinks.sources}
-                      type={episodeLinks.type}
-                      internalPlayer={internalPlayer}
-                      setInternalPlayer={setInternalPlayer}
-                      title={`${episodeLinks.mal_id}EP${episodeLinks.episodeNum}${episodeLinks.isDub}`}
-                      banner={animeDetails.bannerImage}
-                      totalEpisodes={episodeLinks.totalEpisodes}
-                      currentEpisode={episodeLinks.episodeNum}
+                      sources={episodeLinks[3].url}
+                      type={"m3u8"}
+                      downloadLink={downloadLink}
                     />
+                  ) : (
+                    <p>Loading...</p> // Or any other loading indicator
                   )}
-                  {!internalPlayer && (
-                    <div>
-                      <Conttainer>
-                        <IconContext.Provider
-                          value={{
-                            size: "1.5rem",
-                            color: "white",
-                            style: {
-                              verticalAlign: "middle",
-                            },
-                          }}
-                        >
-                          <p>External Player (Contain Ads)</p>
-                          <div>
-                            <div className="tooltip">
-                              <button
-                                onClick={() => {
-                                  toast.success(
-                                    "Swtitched to Internal Player",
-                                    {
-                                      position: "top-center",
-                                    }
-                                  );
-                                  setInternalPlayer(!internalPlayer);
-                                }}
-                              >
-                                <HiOutlineSwitchHorizontal />
-                              </button>
-                              <span className="tooltiptext">Change Server</span>
-                            </div>
-                          </div>
-                        </IconContext.Provider>
-                      </Conttainer>
-                      <IframeWrapper>
-                        <iframe
-                          id="video"
-                          title={animeDetails.title.userPreferred}
-                          src={currentServer}
-                          allowfullscreen="true"
-                          frameborder="0"
-                          marginwidth="0"
-                          marginheight="0"
-                          scrolling="no"
-                        ></iframe>
-                        {width <= 600 && (
-                          <div>
-                            <IconContext.Provider
-                              value={{
-                                size: "1.8rem",
-                                color: "white",
-                                style: {
-                                  verticalAlign: "middle",
-                                  cursor: "pointer",
-                                },
-                              }}
-                            >
-                              <BiFullscreen
-                                onClick={(e) => fullScreenHandler(e)}
-                              />
-                            </IconContext.Provider>
-                          </div>
-                        )}
-                      </IframeWrapper>
-                    </div>
-                  )}
+
                   <EpisodeButtons>
-                    {width <= 600 && (
-                      <IconContext.Provider
-                        value={{
-                          size: "1.8rem",
-                          style: {
-                            verticalAlign: "middle",
-                          },
-                        }}
-                      >
-                        <EpisodeLinks
-                          to={`/play/${episodeLinks.animeId}/${
-                            parseInt(episode) - 1
-                          }`}
-                          style={
-                            parseInt(episode) === 1
-                              ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                              : {}
-                          }
-                        >
-                          <HiArrowSmLeft />
-                        </EpisodeLinks>
-                      </IconContext.Provider>
-                    )}
                     {width > 600 && (
                       <IconContext.Provider
                         value={{
@@ -310,9 +214,7 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={`/play/${episodeLinks.animeId}/${
-                            parseInt(episode) - 1
-                          }`}
+                          to={`/play/${slug}/${parseInt(episode) - 1}`}
                           style={
                             parseInt(episode) === 1
                               ? {
@@ -324,33 +226,6 @@ function WatchAnimeV2() {
                         >
                           <HiArrowSmLeft />
                           Previous
-                        </EpisodeLinks>
-                      </IconContext.Provider>
-                    )}
-                    {width <= 600 && (
-                      <IconContext.Provider
-                        value={{
-                          size: "1.8rem",
-                          style: {
-                            verticalAlign: "middle",
-                          },
-                        }}
-                      >
-                        <EpisodeLinks
-                          to={`/play/${episodeLinks.animeId}/${
-                            parseInt(episode) + 1
-                          }`}
-                          style={
-                            parseInt(episode) ===
-                            parseInt(episodeLinks.totalEpisodes)
-                              ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                              : {}
-                          }
-                        >
-                          <HiArrowSmRight />
                         </EpisodeLinks>
                       </IconContext.Provider>
                     )}
@@ -366,9 +241,7 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={`/play/${episodeLinks.animeId}/${
-                            parseInt(episode) + 1
-                          }`}
+                          to={`/play/${slug}/${parseInt(episode) + 1}`}
                           style={
                             parseInt(episode) ===
                             parseInt(episodeLinks.totalEpisodes)
@@ -386,27 +259,6 @@ function WatchAnimeV2() {
                     )}
                   </EpisodeButtons>
                 </div>
-                <EpisodesWrapper>
-                  <p>Episodes</p>
-                  <Episodes>
-                    {[...Array(parseInt(episodeLinks.totalEpisodes))].map(
-                      (x, i) => (
-                        <EpisodeLink
-                          to={`/play/${episodeLinks.animeId}/${
-                            parseInt(i) + 1
-                          }`}
-                          style={
-                            i + 1 <= parseInt(episode)
-                              ? { backgroundColor: "#7676ff" }
-                              : {}
-                          }
-                        >
-                          {i + 1}
-                        </EpisodeLink>
-                      )
-                    )}
-                  </Episodes>
-                </EpisodesWrapper>
               </VideoPlayerWrapper>
             </div>
           )}

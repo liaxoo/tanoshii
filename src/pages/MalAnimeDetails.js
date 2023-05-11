@@ -197,7 +197,6 @@ function MalAnimeDetails() {
       return;
     }
 
-    // First axios call to search for media by ID
     let aniRes = await axios({
       url: process.env.REACT_APP_BASE_URL,
       method: "POST",
@@ -256,22 +255,53 @@ function MalAnimeDetails() {
 
     // Set state based on both responses
     setAnilistResponse(aniRes.data.data.Media);
-    console.log(watchRes);
+    console.log(aniRes.data.data.Media.id);
+
+    /*
     let malRes = await axios
       .get(`${process.env.REACT_APP_BACKEND_URL}api/getidinfo?malId=${id}`)
       .catch((err) => {
         setNotAvailable(true);
       });
+
+https://api.consumet.org/meta/anilist/info/150075
+
+    //malIdToGogoanimeId()
+    console.log(malRes.data);
+
+    /*
+    let malRes2 = await axios.get(
+      `https://api.consumet.org/anime/gogoanime/info/${sanitizedTitle}`
+    );
+    console.log(malRes2);
+*/
+
+    let malRes = await axios
+      .get(
+        `https://api.consumet.org/meta/anilist/info/${aniRes.data.data.Media.id}`
+      )
+      .catch((err) => {
+        setNotAvailable(true);
+      });
+
+    console.log(malRes.data);
     setMalResponse(malRes.data);
     setLoading(false);
   }
+
+  const getStreamingLink = (episodeNumber) => {
+    const streamingLink = `https://api.consumet.org/meta/anilist/watch/spy-x-family-episode-${episodeNumber}`;
+    // Add your logic to handle the streaming link
+    // e.g., make an API call or perform any necessary processing
+    return streamingLink;
+  };
 
   return (
     <div>
       {notAvailable && (
         <NotAvailable>
           <img src="./assets/404.png" alt="404" />
-          <h1>Oops! This Anime Is Not Available</h1>
+          <h1>Oops! This anime isn't available.</h1>
         </NotAvailable>
       )}
       {loading && !notAvailable && <AnimeDetailsSkeleton />}
@@ -363,13 +393,13 @@ function MalAnimeDetails() {
                     {anilistResponse.status}
                   </p>
                   <p>
-                    <span>Number of Sub Episodes: </span>
-                    {malResponse.subTotalEpisodes}
+                    <span>Number of Episodes: </span>
+                    {malResponse.totalEpisodes}
                   </p>
                   {malResponse.isDub && (
                     <p>
                       <span>Number of Dub Episodes: </span>
-                      {malResponse.dubTotalEpisodes}
+                      {malResponse.totalEpisodes}
                     </p>
                   )}
                 </div>
@@ -404,9 +434,9 @@ function MalAnimeDetails() {
                       ))}
 
                     {!dub &&
-                      [...Array(malResponse.subTotalEpisodes)].map((x, i) => (
+                      [...Array(malResponse.totalEpisodes)].map((x, i) => (
                         <EpisodeLink
-                          to={`/play/${malResponse.subLink}/${parseInt(i) + 1}`}
+                          to={`/play/spy-x-family/${parseInt(i) + 1}`}
                         >
                           Episode {i + 1}
                         </EpisodeLink>

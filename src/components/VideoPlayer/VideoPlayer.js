@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { BiArrowToBottom, BiFullscreen } from "react-icons/bi";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { BsSkipEnd } from "react-icons/bs";
 import { MdPlayDisabled, MdPlayArrow } from "react-icons/md";
@@ -20,6 +21,7 @@ function VideoPlayer({
   banner,
   totalEpisodes,
   currentEpisode,
+  downloadLink,
 }) {
   const { width } = useWindowDimensions();
   const navigate = useNavigate();
@@ -103,6 +105,7 @@ function VideoPlayer({
 
       hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
         const availableQualities = hls.levels.map((l) => l.height);
+        console.log(availableQualities);
         availableQualities.unshift(0);
         defaultOptions.quality = {
           default: 0,
@@ -224,6 +227,7 @@ function VideoPlayer({
       }
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = src;
+
       const defaultOptions = {
         captions: { active: true, update: true, language: "en" },
         controls: [
@@ -359,6 +363,11 @@ function VideoPlayer({
                 <BsSkipEnd />
               </button>
             </div>
+            <div className="tooltip">
+              <a title="Download" href={downloadLink}>
+                <BiArrowToBottom />
+              </a>
+            </div>
           </div>
         </IconContext.Provider>
       </Conttainer>
@@ -390,7 +399,8 @@ const Conttainer = styled.div`
     color: white;
   }
 
-  button {
+  button,
+  a {
     outline: none;
     border: none;
     background: transparent;
