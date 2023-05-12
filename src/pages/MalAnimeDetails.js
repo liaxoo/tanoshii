@@ -31,7 +31,7 @@ function MalAnimeDetails() {
   const [expanded, setExpanded] = useState(false);
   const [dub, setDub] = useState(false);
   const [notAvailable, setNotAvailable] = useState(false);
-
+  const [episode, setEpisode] = useState(null);
   function ChangeStatus() {
     let convertedId = MalToAniList(id);
     return (
@@ -216,7 +216,7 @@ function MalAnimeDetails() {
 
     let watchRes = null;
     if (anilistMalToId) {
-      console.log(parseInt(anilistMalToId));
+      //console.log(parseInt(anilistMalToId));
       watchRes = await axios({
         url: process.env.REACT_APP_BASE_URL,
         method: "POST",
@@ -246,7 +246,7 @@ function MalAnimeDetails() {
         },
       })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
         })
         .then((data) => {
           console.log(data);
@@ -255,27 +255,7 @@ function MalAnimeDetails() {
 
     // Set state based on both responses
     setAnilistResponse(aniRes.data.data.Media);
-    console.log(aniRes.data.data.Media.id);
-
-    /*
-    let malRes = await axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}api/getidinfo?malId=${id}`)
-      .catch((err) => {
-        setNotAvailable(true);
-      });
-
-https://api.consumet.org/meta/anilist/info/150075
-
-    //malIdToGogoanimeId()
-    console.log(malRes.data);
-
-    /*
-    let malRes2 = await axios.get(
-      `https://api.consumet.org/anime/gogoanime/info/${sanitizedTitle}`
-    );
-    console.log(malRes2);
-*/
-
+    let anilistId = aniRes.data.data.Media.id;
     let malRes = await axios
       .get(
         `https://api.consumet.org/meta/anilist/info/${aniRes.data.data.Media.id}`
@@ -283,8 +263,18 @@ https://api.consumet.org/meta/anilist/info/150075
       .catch((err) => {
         setNotAvailable(true);
       });
-
-    console.log(malRes.data);
+    await axios
+      .get(
+        `https://api.consumet.org/meta/anilist/info/${aniRes.data.data.Media.id}?provider=gogoanime`
+      )
+      .catch((err) => {
+        //setNotAvailable(true);
+        Error({ text: `${err}` });
+      })
+      .then((data) => {
+        setEpisode(data.data.episodes);
+        console.log(data.data.episodes);
+      });
     setMalResponse(malRes.data);
     setLoading(false);
   }
@@ -423,24 +413,19 @@ https://api.consumet.org/meta/anilist/info/150075
                 </DubContainer>
                 {width > 600 && (
                   <Episodes>
-                    {malResponse.isDub &&
-                      dub &&
-                      [...Array(malResponse.dubTotalEpisodes)].map((x, i) => (
-                        <EpisodeLink
-                          to={`/play/${malResponse.dubLink}/${parseInt(i) + 1}`}
-                        >
-                          Episode {i + 1}
-                        </EpisodeLink>
-                      ))}
-
-                    {!dub &&
-                      [...Array(malResponse.totalEpisodes)].map((x, i) => (
-                        <EpisodeLink
-                          to={`/play/spy-x-family/${parseInt(i) + 1}`}
-                        >
-                          Episode {i + 1}
-                        </EpisodeLink>
-                      ))}
+                    {episode?.length > 0 &&
+                      episode?.map((epi, index) => {
+                        return (
+                          <EpisodeLink
+                            to={`/play/${epi.id}/${id}/${index + 1}`}
+                          >
+                            Episode {index + 1}
+                          </EpisodeLink>
+                        );
+                      })}
+                    {episode?.length === 0 && (
+                      <div>Sorry, no episodes found.</div>
+                    )}
                   </Episodes>
                 )}
                 {width <= 600 && (

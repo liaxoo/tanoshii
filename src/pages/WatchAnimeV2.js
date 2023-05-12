@@ -23,9 +23,9 @@ import { searchByIdQuery } from "../hooks/searchQueryStrings";
 import toast from "react-hot-toast";
 
 function WatchAnimeV2() {
-  const slug = useParams().slug;
-  const episode = useParams().episode;
-
+  const slug = useParams().episode;
+  const id = useParams().id;
+  const episode = useParams().number;
   const [episodeLinks, setEpisodeLinks] = useState();
   const [currentServer, setCurrentServer] = useState("");
   const [downloadLink, setDownloadLink] = useState();
@@ -47,7 +47,7 @@ function WatchAnimeV2() {
 
     try {
       let res = await axios.get(
-        `https://api.consumet.org/meta/anilist/watch/${slug}-episode-${episode}`
+        `https://api.consumet.org/meta/anilist/watch/${slug}`
       );
 
       setEpisodeLinks(res.data.sources);
@@ -66,7 +66,7 @@ function WatchAnimeV2() {
         data: {
           query: searchByIdQuery,
           variables: {
-            id: 50265,
+            id: id,
           },
         },
       }).catch((err) => {
@@ -214,7 +214,10 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={`/play/${slug}/${parseInt(episode) - 1}`}
+                          to={`/play/${
+                            slug.substring(0, slug.lastIndexOf("-episode-")) +
+                            `-episode-${parseInt(episode) - 1}`
+                          }/${id}/${parseInt(episode) - 1}`}
                           style={
                             parseInt(episode) === 1
                               ? {
@@ -241,7 +244,10 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={`/play/${slug}/${parseInt(episode) + 1}`}
+                          to={`/play/${
+                            slug.substring(0, slug.lastIndexOf("-episode-")) +
+                            `-episode-${parseInt(episode) + 1}`
+                          }/${id}/${parseInt(episode) + 1}`}
                           style={
                             parseInt(episode) ===
                             parseInt(episodeLinks.totalEpisodes)
