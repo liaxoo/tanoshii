@@ -1,32 +1,31 @@
 export let PopularAnimeQuery = `
-	query($perPage: Int, $page: Int) {
-		Page(page: $page, perPage: $perPage) {
-			pageInfo {
-				total
-				perPage
-				currentPage
-				lastPage
-				hasNextPage
-			}
-			media(sort : POPULARITY_DESC, type: ANIME) {
-				idMal
-				title {
-					romaji
-					english
-					userPreferred
-				}
-				bannerImage
-				coverImage {
-					medium
-        	large
-        	extraLarge
-				}
-				description
-				episodes
-
-			}
-		}
-	}
+query($perPage: Int, $page: Int, $format: MediaFormat) {
+  Page(page: $page, perPage: $perPage) {
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
+    media(sort: POPULARITY_DESC, type: ANIME, format: $format) {
+      idMal
+      title {
+        romaji
+        english
+        userPreferred
+      }
+      bannerImage
+      coverImage {
+        medium
+        large
+        extraLarge
+      }
+      description
+      episodes
+    }
+  }
+}
 `;
 
 export let TrendingAnimeQuery = `

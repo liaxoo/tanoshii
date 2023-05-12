@@ -9,20 +9,116 @@ import AnimeCardsSkeleton from "../../components/skeletons/AnimeCardsSkeleton";
 import "swiper/css";
 import "swiper/css/scrollbar";
 
+import {
+  PopularAnimeQuery,
+  TrendingAnimeQuery,
+  top100AnimeQuery,
+} from "../../hooks/searchQueryStrings";
+
 function AnimeCards(props) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     getData();
   }, []);
-
   async function getData() {
-    let res = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}api/getmalinfo?criteria=${props.criteria}&count=${props.count}`
-    );
+    let res = null;
 
-    setLoading(false);
-    setData(res.data.data);
+    if (props.criteria == "trending") {
+      res = await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        data: {
+          query: TrendingAnimeQuery,
+          variables: {
+            page: 1,
+            perPage: 7,
+          },
+        },
+      })
+        .catch((err) => {
+          Error({ err });
+        })
+        .then((data) => {
+          setLoading(false);
+          setData(data.data.data.Page.media);
+        });
+    } else if (props.criteria == "popular") {
+      res = await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        data: {
+          query: PopularAnimeQuery,
+          variables: {
+            page: 1,
+            perPage: props.count,
+            format: "TV",
+          },
+        },
+      })
+        .catch((err) => {
+          Error({ err });
+        })
+        .then((data) => {
+          setLoading(false);
+          setData(data.data.data.Page.media);
+        });
+    } else if (props.criteria == "movie") {
+      res = await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        data: {
+          query: PopularAnimeQuery,
+          variables: {
+            page: 1,
+            perPage: props.count,
+            format: "MOVIE",
+          },
+        },
+      })
+        .catch((err) => {
+          Error({ err });
+        })
+        .then((data) => {
+          setLoading(false);
+          setData(data.data.data.Page.media);
+        });
+    } else if (props.criteria == "toprated") {
+      res = await axios({
+        url: process.env.REACT_APP_BASE_URL,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        data: {
+          query: top100AnimeQuery,
+          variables: {
+            page: 1,
+            perPage: props.count,
+          },
+        },
+      })
+        .catch((err) => {
+          Error({ err });
+        })
+        .then((data) => {
+          setLoading(false);
+          setData(data.data.data.Page.media);
+        });
+    }
   }
   return (
     <div>
@@ -32,7 +128,7 @@ function AnimeCards(props) {
           slidesPerView={7}
           spaceBetween={35}
           scrollbar={{
-            hide:  true,
+            hide: true,
           }}
           breakpoints={{
             "@0.00": {
@@ -62,10 +158,10 @@ function AnimeCards(props) {
           {data.map((item, i) => (
             <SwiperSlide>
               <Wrapper>
-                <Link to={"id/" + item.node.id}>
-                  <img src={item.node.main_picture.large} alt="" />
+                <Link to={"id/" + item.malId}>
+                  <img src={item.coverImage.large} alt="" />
                 </Link>
-                <p>{item.node.title}</p>
+                <p>{item.title.english}</p>
               </Wrapper>
             </SwiperSlide>
           ))}

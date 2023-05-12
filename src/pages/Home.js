@@ -90,7 +90,7 @@ function Home() {
             </Heading>
             <Links to="/trending/1">View All</Links>
           </HeadingWrapper>
-          <AnimeCards count={width <= 600 ? 7 : 15} criteria="airing" />
+          <AnimeCards count={width <= 600 ? 7 : 15} criteria="trending" />
         </div>
         <div>
           <HeadingWrapper>
@@ -99,7 +99,7 @@ function Home() {
             </Heading>
             <Links to="/popular/1">View All</Links>
           </HeadingWrapper>
-          <AnimeCards count={width <= 600 ? 7 : 15} criteria="bypopularity" />
+          <AnimeCards count={width <= 600 ? 7 : 15} criteria="popular" />
         </div>
         <div>
           <HeadingWrapper>
@@ -108,22 +108,13 @@ function Home() {
             </Heading>
             <Links to="/top100/1">View All</Links>
           </HeadingWrapper>
-          <AnimeCards count={width <= 600 ? 7 : 15} criteria="all" />
+          <AnimeCards count={width <= 600 ? 7 : 15} criteria="toprated" />
         </div>
 
         <div>
           <HeadingWrapper>
             <Heading>
               <span>Popular Movies</span>
-            </Heading>
-            <Links to="/movies">View All</Links>
-          </HeadingWrapper>
-          <AnimeCards count={width <= 600 ? 7 : 15} criteria="movie" />
-        </div>
-        <div>
-          <HeadingWrapper>
-            <Heading>
-              <span>Recently Updated</span>
             </Heading>
             <Links to="/movies">View All</Links>
           </HeadingWrapper>
