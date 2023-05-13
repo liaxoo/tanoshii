@@ -21,7 +21,6 @@ import { SignIn, Success, Error } from "../components/NotificationManager";
 function MalAnimeDetails() {
   const id = useParams().id;
   const watching = false;
-  const anilistMalToId = MalToAniList(id);
 
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -33,7 +32,6 @@ function MalAnimeDetails() {
   const [notAvailable, setNotAvailable] = useState(false);
   const [episode, setEpisode] = useState(null);
   function ChangeStatus() {
-    let convertedId = MalToAniList(id);
     return (
       <Menu shadow="md" width={200}>
         <Menu.Target>
@@ -49,43 +47,31 @@ function MalAnimeDetails() {
         <Menu.Dropdown>
           <Menu.Item
             onClick={() =>
-              ChangeAnimeStatus({ type: "COMPLETED", animeId: convertedId })
+              ChangeAnimeStatus({ type: "COMPLETED", animeId: id })
             }
           >
             Complete
           </Menu.Item>
           <Menu.Item
-            onClick={() =>
-              ChangeAnimeStatus({ type: "CURRENT", animeId: convertedId })
-            }
+            onClick={() => ChangeAnimeStatus({ type: "CURRENT", animeId: id })}
           >
             Watching
           </Menu.Item>
           <Menu.Item
-            onClick={() =>
-              ChangeAnimeStatus({ type: "DROPPED", animeId: convertedId })
-            }
+            onClick={() => ChangeAnimeStatus({ type: "DROPPED", animeId: id })}
           >
             Dropped
           </Menu.Item>
           <Menu.Item
-            onClick={() =>
-              ChangeAnimeStatus({ type: "PLANNING", animeId: convertedId })
-            }
+            onClick={() => ChangeAnimeStatus({ type: "PLANNING", animeId: id })}
           >
             Planning
           </Menu.Item>
           <Menu.Item
             color="red"
-            onClick={() =>
-              ChangeAnimeStatus({ type: "DELETE", animeId: convertedId })
-            }
+            onClick={() => ChangeAnimeStatus({ type: "DELETE", animeId: id })}
           >
             Delete
-          </Menu.Item>
-
-          <Menu.Item color="red" onClick={() => ChangeAnimeEpisode()}>
-            test
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
@@ -95,22 +81,34 @@ function MalAnimeDetails() {
   function Favorite() {
     return (
       <div>
-        {isFavorite && (
+        {isFavorite && localStorage.getItem("anilistClientId") && (
           <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
             <ButtonFavorited
               className="outline-favorite"
-              onClick={() => toggleFavorite({ aniId: anilistMalToId })}
+              onClick={() => toggleFavorite({ aniId: id })}
             >
               <FiHeart color="white" fill="white" size={"100%"} />
             </ButtonFavorited>
           </IconContext.Provider>
         )}
-        {!isFavorite && (
+        {!isFavorite && localStorage.getItem("anilistClientId") && (
           <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
             <ButtonFavorite
               className="outline-favorite"
               onClick={() => {
-                toggleFavorite({ aniId: anilistMalToId });
+                toggleFavorite({ aniId: id });
+              }}
+            >
+              <FiHeart color="white" size={"100%"} />
+            </ButtonFavorite>
+          </IconContext.Provider>
+        )}
+        {!localStorage.getItem("anilistClientId") && (
+          <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
+            <ButtonFavorite
+              className="outline-favorite"
+              onClick={() => {
+                SignIn();
               }}
             >
               <FiHeart color="white" size={"100%"} />
@@ -136,19 +134,19 @@ function MalAnimeDetails() {
         data: {
           query: `
                   query ($idMal: Int) {
-                    Media(idMal: $idMal) {
+                    Media(id: $idMal) {
                       isFavourite
                     }
                   }
                 `,
-          variables: { idMal: animeid },
+          variables: { idMal: id },
         },
       })
         .then((data) => {
           setIsFavorite(data.data.data.Media.isFavourite);
         })
-        .catch((error) => {
-          console.error(error);
+        .catch((err) => {
+          Error({ text: err });
         });
     } else setIsFavorite(false);
   };
@@ -177,8 +175,8 @@ function MalAnimeDetails() {
           variables: { animeId: aniId },
         },
       })
-        .catch((error) => {
-          Error({ text: error });
+        .catch((err) => {
+          Error({ text: err });
         })
         .then((data) => {
           if (isFavorite == true) {
@@ -192,6 +190,7 @@ function MalAnimeDetails() {
     } else Error({ text: "You must be logged in to use this feature." });
   }
   async function getInfo() {
+    window.scrollTo(0, 0);
     if (id === "null") {
       setNotAvailable(true);
       return;
@@ -211,22 +210,22 @@ function MalAnimeDetails() {
         },
       },
     }).catch((err) => {
-      console.log(err);
+      Error({ text: err });
     });
 
     let watchRes = null;
-    if (anilistMalToId) {
-      //console.log(parseInt(anilistMalToId));
-      watchRes = await axios({
-        url: process.env.REACT_APP_BASE_URL,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
-        },
-        data: {
-          query: `
+
+    /*
+    watchRes = await axios({
+      url: process.env.REACT_APP_BASE_URL,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
+      },
+      data: {
+        query: `
             query ($mediaId: Int, $userId: Int) {
               MediaList(mediaId: $mediaId, userId: $userId) {
                 id
@@ -239,20 +238,15 @@ function MalAnimeDetails() {
               }
             }
           `,
-          variables: {
-            mediaId: anilistMalToId, // Convert string to integer
-            userId: 5600871,
-          },
+        variables: {
+          mediaId: id, // Convert string to integer
+          userId: 5600871,
         },
-      })
-        .catch((err) => {
-          //console.log(err);
-        })
-        .then((data) => {
-          console.log(data);
-        });
-    } else;
-
+      },
+    }).catch((err) => {
+      Error({text: err})(err);
+    });
+*/
     // Set state based on both responses
     setAnilistResponse(aniRes.data.data.Media);
     let anilistId = aniRes.data.data.Media.id;
@@ -269,22 +263,14 @@ function MalAnimeDetails() {
       )
       .catch((err) => {
         //setNotAvailable(true);
-        Error({ text: `${err}` });
+        Error({ text: err });
       })
       .then((data) => {
         setEpisode(data.data.episodes);
-        console.log(data.data.episodes);
       });
     setMalResponse(malRes.data);
     setLoading(false);
   }
-
-  const getStreamingLink = (episodeNumber) => {
-    const streamingLink = `https://api.consumet.org/meta/anilist/watch/spy-x-family-episode-${episodeNumber}`;
-    // Add your logic to handle the streaming link
-    // e.g., make an API call or perform any necessary processing
-    return streamingLink;
-  };
 
   return (
     <div>
@@ -301,7 +287,7 @@ function MalAnimeDetails() {
             <div>
               <BannerContainer>
                 <ButtonsContainer>
-                  {localStorage.getItem("anilistClientId") && <Favorite />}
+                  <Favorite />
                   <ChangeStatus />
                 </ButtonsContainer>
                 <Banner
@@ -417,6 +403,7 @@ function MalAnimeDetails() {
                       episode?.map((epi, index) => {
                         return (
                           <EpisodeLink
+                            key={index}
                             to={`/play/${epi.id}/${id}/${index + 1}`}
                           >
                             Episode {index + 1}
@@ -430,24 +417,14 @@ function MalAnimeDetails() {
                 )}
                 {width <= 600 && (
                   <Episodes>
-                    {malResponse.isDub &&
-                      dub &&
-                      [...Array(malResponse.dubTotalEpisodes)].map((x, i) => (
-                        <EpisodeLink
-                          to={`/play/${malResponse.dubLink}/${parseInt(i) + 1}`}
-                        >
-                          {i + 1}
-                        </EpisodeLink>
-                      ))}
-
-                    {!dub &&
-                      [...Array(malResponse.subTotalEpisodes)].map((x, i) => (
-                        <EpisodeLink
-                          to={`/play/${malResponse.subLink}/${parseInt(i) + 1}`}
-                        >
-                          {i + 1}
-                        </EpisodeLink>
-                      ))}
+                    {episode?.map((x, i) => (
+                      <EpisodeLink
+                        key={i}
+                        to={`/play/${malResponse.dubLink}/${parseInt(i) + 1}`}
+                      >
+                        {i + 1}
+                      </EpisodeLink>
+                    ))}
                   </Episodes>
                 )}
               </Episode>

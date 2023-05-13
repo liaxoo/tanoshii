@@ -9,7 +9,7 @@ query($perPage: Int, $page: Int, $format: MediaFormat) {
       hasNextPage
     }
     media(sort: POPULARITY_DESC, type: ANIME, format: $format) {
-      idMal
+      id
       title {
         romaji
         english
@@ -39,7 +39,7 @@ export let TrendingAnimeQuery = `
 				hasNextPage
 			}
 			media (sort :TRENDING_DESC, type : ANIME){
-				idMal
+				id
 				title {
 					romaji
 					english
@@ -70,7 +70,7 @@ export let top100AnimeQuery = `
 				hasNextPage
 			}
 			media (sort :SCORE_DESC, type : ANIME){
-				idMal
+				id
 				title {
 					romaji
 					english
@@ -101,7 +101,7 @@ export let favouritesAnimeQuery = `
 				hasNextPage
 			}
 			media(sort: FAVOURITES_DESC, type: ANIME) {
-				idMal
+				id
 				title {
 					romaji
 					english
@@ -124,7 +124,7 @@ export let searchAnimeQuery = `
 	query($search: String) {
 		Page(page: 1, perPage: 100) {
 			media(search: $search, type: ANIME, sort: POPULARITY_DESC) {
-				idMal
+				id
 				title {
 					romaji
 					english
@@ -144,7 +144,7 @@ export let searchAnimeQuery = `
 
 export let searchByIdQuery = `
 	query($id: Int) {
-		Media(idMal: $id, type: ANIME){
+		Media(id: $id, type: ANIME){
 			title {
 				romaji
 				english

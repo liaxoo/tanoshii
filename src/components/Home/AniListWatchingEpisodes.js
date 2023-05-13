@@ -75,7 +75,7 @@ function AniListWatchingEpisodes() {
           setAniListWatchingEpisodesData(data);
           setLoading(false);
         })
-        .catch((error) => console.error(error));
+        .catch((error) => Error({ error }));
     }, []);
 
     if (loading) {
@@ -141,7 +141,7 @@ function AniListWatchingEpisodes() {
                       </button>
                     </IconContext.Provider>
 
-                    <Link to={`id/${item.media.idMal}/`}>
+                    <Link to={`id/${item.media.id}`}>
                       <img src={item.media.coverImage.large} alt="" />
                     </Link>
                     <p>
@@ -157,7 +157,6 @@ function AniListWatchingEpisodes() {
         )}
       </div>
     );
-
   }
   return (
     <div>

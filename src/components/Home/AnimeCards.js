@@ -158,7 +158,7 @@ function AnimeCards(props) {
           {data.map((item, i) => (
             <SwiperSlide>
               <Wrapper>
-                <Link to={"id/" + item.malId}>
+                <Link to={`id/` + item.id}>
                   <img src={item.coverImage.large} alt="" />
                 </Link>
                 <p>{item.title.english}</p>

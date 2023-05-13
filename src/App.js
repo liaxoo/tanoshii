@@ -15,7 +15,7 @@ import WatchAnimeV2 from "./pages/WatchAnimeV2";
 import GlobalStyle from "./styles/globalStyles";
 import Login from "./pages/Login";
 import Success from "./pages/Success";
-
+import Footer from "./components/Navigation/Footer";
 function App() {
   return (
     <Router>
@@ -36,6 +36,7 @@ function App() {
         <Route path="/id/:id" element={<MalAnimeDetails />} />
         <Route path="/play/:episode/:id/:number" element={<WatchAnimeV2 />} />
       </Routes>
+      <Footer />
       <Toaster
         toastOptions={{
           style: {
