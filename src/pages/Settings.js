@@ -13,17 +13,15 @@ function Success() {
 
   return (
     <div>
-      <div class="switch">
-        <label for="switch">
-          <input
-            type="checkbox"
-            id="switch"
-            onChange={(e) => setDub(!dub)}
-          ></input>
-          <span class="indicator"></span>
-          <span class="label">{dub ? "Dub" : "Sub"}</span>
-        </label>
-      </div>
+      <HomeDiv>
+        <HomeHeading>
+          <span>Settings</span>
+        </HomeHeading>
+
+        <Text>
+          If changes aren't being made when you save, refresh the browser.
+        </Text>
+      </HomeDiv>
     </div>
   );
 }
@@ -54,7 +52,7 @@ const Text = styled.p`
   margin-bottom: 1rem;
 `;
 
-const switch = styled.div`
+const Switch = styled.div`
   position: relative;
 
   label {

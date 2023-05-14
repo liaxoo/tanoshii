@@ -2,6 +2,7 @@ import { Menu } from "@mantine/core";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FiLogOut, FiSettings, FiInfo } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 import ProfileSkeleton from "../skeletons/ProfileSkeleton";
 import { Link } from "react-router-dom";
@@ -64,6 +65,15 @@ function NavAvatar() {
     localStorage.setItem("clientAvatar", "");
     window.location.reload();
   }
+
+  function toasts() {
+    toast.error(
+      `We are currently having issues with this feature. Please try again later.`,
+      {
+        position: "top-center",
+      }
+    );
+  }
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
@@ -89,12 +99,18 @@ function NavAvatar() {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item icon={<FiSettings size={14} style={{ marginBottom: 0 }} />}>
+        <Menu.Item
+          onClick={toasts}
+          icon={<FiSettings size={14} style={{ marginBottom: 0 }} />}
+        >
           Settings
         </Menu.Item>
-        <Menu.Item icon={<FiInfo size={14} style={{ marginBottom: 0 }} />}>
-          About
-        </Menu.Item>
+        <Link to="/settings/" style={{ margin: 0, textDecoration: "none" }}>
+          <Menu.Item icon={<FiInfo size={14} style={{ marginBottom: 0 }} />}>
+            About
+          </Menu.Item>
+        </Link>
+
         <Menu.Divider />
 
         <Menu.Item

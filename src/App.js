@@ -16,6 +16,7 @@ import GlobalStyle from "./styles/globalStyles";
 import Login from "./pages/Login";
 import Success from "./pages/Success";
 import Footer from "./components/Navigation/Footer";
+import Settings from "./pages/Settings";
 function App() {
   return (
     <Router>
@@ -24,6 +25,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login/" element={<Login />} />
+        <Route path="/settings/" element={<Settings />} />
         <Route path="/success/" element={<Success />} />
         <Route path="/popular/:page" element={<PopularAnime />} />
         <Route path="/trending/:page" element={<TrendingAnime />} />

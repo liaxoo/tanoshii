@@ -26,8 +26,8 @@ function Nav() {
         <Link
           to="/"
           style={{
-            width: "12.5%",
-            height: "1%",
+            width: "10%",
+            height: "5%",
             display: "flex",
             justifyContent: "start",
           }}
