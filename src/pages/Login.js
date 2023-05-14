@@ -43,7 +43,7 @@ function Home() {
     });
     setImages(result.data.data.Page.media);
     setLoading(false);
-    document.title = "Miyou - Watch anime for free, ad-free!";
+    document.title = "Tanoshii - Login";
   }
 
   function AniListAuthButton() {

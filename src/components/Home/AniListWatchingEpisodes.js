@@ -36,7 +36,7 @@ function AniListWatchingEpisodes() {
     ] = useState([]);
 
     useEffect(() => {
-      fetch("https://graphql.anilist.co", {
+      fetch(process.env.REACT_APP_BASE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

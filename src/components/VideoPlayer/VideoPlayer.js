@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import { BiArrowToBottom, BiFullscreen } from "react-icons/bi";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { BsSkipEnd } from "react-icons/bs";
-import { MdPlayDisabled, MdPlayArrow } from "react-icons/md";
+import {
+  MdPlayDisabled,
+  MdPlayArrow,
+  MdSync,
+  MdSyncDisabled,
+  MdDownload,
+} from "react-icons/md";
 import { IconContext } from "react-icons";
 import styled from "styled-components";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
@@ -31,6 +37,11 @@ function VideoPlayer({
   let src = sources;
   const [player, setPlayer] = useState(null);
   const [autoPlay, setAutoplay] = useState(false);
+  const [sync, setSync] = useState(
+    localStorage.getItem("sync")
+      ? JSON.parse(localStorage.getItem("sync"))
+      : false
+  );
 
   function skipIntro() {
     player.forward(85);
@@ -42,6 +53,14 @@ function VideoPlayer({
     });
     localStorage.setItem("autoplay", data);
     setAutoplay(data);
+  }
+
+  function syncWithAniList(data) {
+    toast.success(`Syncing with AniList ${data ? "Enabled" : "Disabled"}`, {
+      position: "top-center",
+    });
+    localStorage.setItem("sync", data);
+    setSync(data);
   }
 
   useEffect(() => {
@@ -345,6 +364,26 @@ function VideoPlayer({
                 </button>
               </div>
             )}
+            {sync && (
+              <div className="tooltip">
+                <button
+                  title="Disable sync to AniList"
+                  onClick={() => syncWithAniList(false)}
+                >
+                  <MdSync />
+                </button>
+              </div>
+            )}
+            {!sync && (
+              <div className="tooltip">
+                <button
+                  title="Enable sync to AniList"
+                  onClick={() => syncWithAniList(true)}
+                >
+                  <MdSyncDisabled />
+                </button>
+              </div>
+            )}
             <div className="tooltip">
               <button
                 title="Change Server"
@@ -365,7 +404,7 @@ function VideoPlayer({
             </div>
             <div className="tooltip">
               <a title="Download" href={downloadLink}>
-                <BiArrowToBottom />
+                <MdDownload />
               </a>
             </div>
           </div>
@@ -389,8 +428,8 @@ const Conttainer = styled.div`
   justify-content: space-between;
   align-items: center;
   background-color: #242235;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem 0.5rem 0 0;
+
+  border-radius: 0.5rem 0.5rem 0.05rem 0rem;
   border: 1px solid #393653;
   margin-top: 1rem;
   border-bottom: none;
@@ -398,7 +437,7 @@ const Conttainer = styled.div`
   p {
     color: white;
   }
-
+  padding: 0.5rem 1rem 0.5rem 0;
   button,
   a {
     outline: none;
@@ -411,7 +450,6 @@ const Conttainer = styled.div`
   .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black;
   }
 
   .tooltip .tooltiptext {

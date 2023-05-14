@@ -123,32 +123,42 @@ function MalAnimeDetails() {
     isFavorited();
   }, []);
   const isFavorited = async (props) => {
-    let animeid = id;
-    if (localStorage.getItem("anilistClientId")) {
-      let response = await axios({
-        url: process.env.REACT_APP_BASE_URL,
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
-        },
-        data: {
-          query: `
-                  query ($idMal: Int) {
-                    Media(id: $idMal) {
-                      isFavourite
+    if (notAvailable == false) {
+      let animeid = id;
+      if (localStorage.getItem("anilistClientId")) {
+        let response = await axios({
+          url: process.env.REACT_APP_BASE_URL,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem(
+              "anilistAccessToken"
+            )}`,
+          },
+          data: {
+            query: `
+                    query ($idMal: Int) {
+                      Media(id: $idMal) {
+                        isFavourite
+                      }
                     }
-                  }
-                `,
-          variables: { idMal: id },
-        },
-      })
-        .then((data) => {
-          setIsFavorite(data.data.data.Media.isFavourite);
+                  `,
+            variables: { idMal: id },
+          },
         })
-        .catch((err) => {
-          Error({ text: err });
-        });
-    } else setIsFavorite(false);
+          .then((data) => {
+            setIsFavorite(data.data.data.Media.isFavourite);
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 404) {
+              // Handle the 404 error
+              setNotAvailable(true);
+            } else {
+              // Handle other errors
+              console.log("Error:", error.message);
+            }
+          });
+      } else setIsFavorite(false);
+    } else return;
   };
   function readMoreHandler() {
     setExpanded(!expanded);
@@ -209,57 +219,30 @@ function MalAnimeDetails() {
           id,
         },
       },
-    }).catch((err) => {
-      Error({ text: err });
+    }).catch((error) => {
+      if (error.response && error.response.status === 404) {
+        // Handle the 404 error
+        setNotAvailable(true);
+      } else {
+        // Handle other errors
+        console.log("Error:", error.message);
+      }
     });
 
     let watchRes = null;
 
-    /*
-    watchRes = await axios({
-      url: process.env.REACT_APP_BASE_URL,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${localStorage.getItem("anilistAccessToken")}`,
-      },
-      data: {
-        query: `
-            query ($mediaId: Int, $userId: Int) {
-              MediaList(mediaId: $mediaId, userId: $userId) {
-                id
-                status
-                media {
-                  title {
-                    english
-                  }
-                }
-              }
-            }
-          `,
-        variables: {
-          mediaId: id, // Convert string to integer
-          userId: 5600871,
-        },
-      },
-    }).catch((err) => {
-      Error({text: err})(err);
-    });
-*/
-    // Set state based on both responses
     setAnilistResponse(aniRes.data.data.Media);
     let anilistId = aniRes.data.data.Media.id;
     let malRes = await axios
       .get(
-        `https://api.consumet.org/meta/anilist/info/${aniRes.data.data.Media.id}`
+        `${process.env.REACT_APP_BACKEND_URL}/info/${aniRes.data.data.Media.id}`
       )
       .catch((err) => {
         setNotAvailable(true);
       });
     await axios
       .get(
-        `https://api.consumet.org/meta/anilist/info/${aniRes.data.data.Media.id}?provider=gogoanime`
+        `${process.env.REACT_APP_BACKEND_URL}/info/${aniRes.data.data.Media.id}?provider=gogoanime`
       )
       .catch((err) => {
         //setNotAvailable(true);
@@ -277,7 +260,9 @@ function MalAnimeDetails() {
       {notAvailable && (
         <NotAvailable>
           <img src="./assets/404.png" alt="404" />
-          <h1>Oops! This anime isn't available.</h1>
+          <h1 style={{ paddingBottom: "22%" }}>
+            Oops! This anime isn't available.
+          </h1>
         </NotAvailable>
       )}
       {loading && !notAvailable && <AnimeDetailsSkeleton />}

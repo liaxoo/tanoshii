@@ -40,7 +40,7 @@ function PopularMovies() {
         setAnimeDetails(data.data.data.Page.media);
       });
 
-    document.title = "Popular Anime - Miyou";
+    document.title = "Popular Movies - Tanoshii";
   }
 
   return (

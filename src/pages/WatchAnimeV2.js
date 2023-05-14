@@ -47,7 +47,7 @@ function WatchAnimeV2() {
 
     try {
       let res = await axios.get(
-        `https://api.consumet.org/meta/anilist/watch/${slug}`
+        `${process.env.REACT_APP_BACKEND_URL}/watch/${slug}`
       );
 
       setEpisodeLinks(res.data.sources);
@@ -73,6 +73,10 @@ function WatchAnimeV2() {
         console.log(err);
       });
       setAnimeDetails(aniRes.data.data.Media);
+      ChangeAnimeEpisode({
+        animeId: id,
+        progress: episode,
+      });
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -147,7 +151,7 @@ function WatchAnimeV2() {
                       }}
                     >
                       <a
-                        href={episodeLinks.downloadLink}
+                        href={downloadLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -195,6 +199,7 @@ function WatchAnimeV2() {
                     <VideoPlayer
                       sources={episodeLinks[3].url}
                       type={"m3u8"}
+                      title={`${animeDetails.title}EP${episode}`}
                       downloadLink={downloadLink}
                     />
                   ) : (
@@ -265,6 +270,26 @@ function WatchAnimeV2() {
                     )}
                   </EpisodeButtons>
                 </div>
+                <EpisodesWrapper>
+                  <p>Episodes</p>
+                  <Episodes>
+                    {[...Array(parseInt(animeDetails.episodes))].map((x, i) => (
+                      <EpisodeLink
+                        to={`/play/${
+                          slug.substring(0, slug.lastIndexOf("-episode-")) +
+                          `-episode-${parseInt(i) + 1}`
+                        }/${id}/${parseInt(i) + 1}`}
+                        style={
+                          i + 1 <= parseInt(episode)
+                            ? { backgroundColor: "#7676ff" }
+                            : {}
+                        }
+                      >
+                        {i + 1}
+                      </EpisodeLink>
+                    ))}
+                  </Episodes>
+                </EpisodesWrapper>
               </VideoPlayerWrapper>
             </div>
           )}

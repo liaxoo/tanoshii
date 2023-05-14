@@ -43,7 +43,9 @@ const TextContainer = styled.div`
 const FootBar = styled.section`
   text-align: center;
   width: 100%;
-  background-color: ${COLORS.colorPopup};
+  background: ${COLORS.colorPopup};
+  bottom: 0;
+  position: inherit;
 `;
 
 const Shadow = styled.div`

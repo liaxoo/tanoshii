@@ -23,7 +23,15 @@ function Nav() {
   return (
     <div>
       <NavBar>
-        <Link to="/">
+        <Link
+          to="/"
+          style={{
+            width: "12.5%",
+            height: "1%",
+            display: "flex",
+            justifyContent: "start",
+          }}
+        >
           <img src="./assets/logo.svg" alt="Logo Here" />
         </Link>
         <div className="nav-links">
@@ -47,7 +55,7 @@ function Nav() {
               <Button onClick={(e) => setIsActive(!isActive)}>
                 <FiSearch />
               </Button>
-                <NavAvatar />
+              <NavAvatar />
             </div>
           </IconContext.Provider>
         )}
@@ -152,6 +160,7 @@ const Button2 = styled.button`
 
 const Links = styled(Link)`
   color: white;
+  width: 20%;
   font-weight: 400;
   text-decoration: none;
   margin: 0rem 1.3rem 0 1.3rem;

@@ -4,14 +4,14 @@ import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
 
 import { Error, Success, SignIn } from "../../components/NotificationManager";
-
+import toast from "react-hot-toast";
 import { ActionIcon } from "@mantine/core";
 import { FiHeart } from "react-icons/fi";
 
 const MalToAniList = (malID) => {
   const [data, setData] = useState();
   useEffect(() => {
-    fetch("https://graphql.anilist.co", {
+    fetch(process.env.REACT_APP_BASE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +64,7 @@ const AnimeFavoriteStatus = ({ animeId, accessToken }) => {
         Authorization: `Bearer ${accessToken}`,
       };
 
-      const endpoint = "https://graphql.anilist.co";
+      const endpoint = process.env.REACT_APP_BASE_URL;
 
       try {
         const response = await axios.post(
@@ -121,6 +121,13 @@ async function ChangeAnimeStatus({ type, animeId }) {
         });
       return;
     } else {
+      toast.error(
+        `We are currently having issues with this feature. Please try again later.`,
+        {
+          position: "top-center",
+        }
+      );
+      /*
       await axios({
         url: process.env.REACT_APP_BASE_URL,
         method: "POST",
@@ -149,12 +156,16 @@ async function ChangeAnimeStatus({ type, animeId }) {
         .then((data) => {
           console.log(data.data.data.MediaList.id);
         });
+        */
     }
   } else return SignIn();
 }
 
 async function ChangeAnimeEpisode({ animeId, progress }) {
-  if (localStorage.getItem("anilistClientId")) {
+  if (
+    localStorage.getItem("anilistClientId") &&
+    localStorage.getItem("sync") != "false"
+  ) {
     await axios({
       url: process.env.REACT_APP_BASE_URL,
       method: "POST",
