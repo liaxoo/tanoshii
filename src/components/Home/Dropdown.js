@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 import ProfileSkeleton from "../skeletons/ProfileSkeleton";
 import { Link } from "react-router-dom";
-import { FiSearch, FiUser } from "react-icons/fi";
+import { FiSearch, FiUser, FiCoffee } from "react-icons/fi";
 import { IconContext } from "react-icons";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 
@@ -110,9 +110,17 @@ function NavAvatar() {
             About
           </Menu.Item>
         </Link>
-
         <Menu.Divider />
 
+        <a
+          href="https://ko-fi.com/tanoshii"
+          style={{ margin: 0, textDecoration: "none" }}
+        >
+          <Menu.Item icon={<FiCoffee size={14} style={{ marginBottom: 0 }} />}>
+            Donate
+          </Menu.Item>
+        </a>
+        <Menu.Divider />
         <Menu.Item
           onClick={logOut}
           color="red"
