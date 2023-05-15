@@ -402,14 +402,17 @@ function MalAnimeDetails() {
                 )}
                 {width <= 600 && (
                   <Episodes>
-                    {episode?.map((x, i) => (
-                      <EpisodeLink
-                        key={i}
-                        to={`/play/${malResponse.dubLink}/${parseInt(i) + 1}`}
-                      >
-                        {i + 1}
-                      </EpisodeLink>
-                    ))}
+                    {episode?.length > 0 &&
+                      episode?.map((epi, index) => {
+                        return (
+                          <EpisodeLink
+                            key={index}
+                            to={`/play/${epi.id}/${id}/${index + 1}`}
+                          >
+                            Episode {index + 1}
+                          </EpisodeLink>
+                        );
+                      })}
                   </Episodes>
                 )}
               </Episode>
