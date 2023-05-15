@@ -188,8 +188,7 @@ function WatchAnimeV2() {
                     fontWeight: 300,
                   }}
                 >
-                  If the video player doesn't load or if blank refresh the page
-                  or use the external server
+                  If the player doesn't load, please refresh.
                 </p>
               </div>
 

@@ -409,7 +409,7 @@ function MalAnimeDetails() {
                             key={index}
                             to={`/play/${epi.id}/${id}/${index + 1}`}
                           >
-                            Episode {index + 1}
+                            {index + 1}
                           </EpisodeLink>
                         );
                       })}

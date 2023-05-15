@@ -105,7 +105,7 @@ function NavAvatar() {
         >
           Settings
         </Menu.Item>
-        <Link to="/settings/" style={{ margin: 0, textDecoration: "none" }}>
+        <Link to="/about/" style={{ margin: 0, textDecoration: "none" }}>
           <Menu.Item icon={<FiInfo size={14} style={{ marginBottom: 0 }} />}>
             About
           </Menu.Item>
