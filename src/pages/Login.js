@@ -10,7 +10,7 @@ import { IconContext } from "react-icons";
 
 const CLIENT_ID = "12200";
 const CLIENT_SECRET = "BCFhWkmKxjBjv6EhVbWgaSlxmQBdOJRHdHQBRaAH";
-const REDIRECT_URI = "http://localhost:3000/login/";
+const REDIRECT_URI = "https://www.tanoshii.live/login/";
 
 function Home() {
   const history = useNavigate();
