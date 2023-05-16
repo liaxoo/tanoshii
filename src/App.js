@@ -18,7 +18,18 @@ import Success from "./pages/Success";
 import Footer from "./components/Navigation/Footer";
 import Settings from "./pages/Settings";
 import About from "./pages/About";
+
+import { Error, SignIn, Update } from "./components/NotificationManager";
+
 function App() {
+  const storedVersion = localStorage.getItem("version");
+  const currentVersion = "1.0.0";
+  const isNewUpdateAvailable = currentVersion > storedVersion;
+  if (isNewUpdateAvailable) {
+    localStorage.setItem("version", currentVersion);
+    Update({ currentVersion: storedVersion, newVersion: currentVersion });
+  }
+
   return (
     <Router>
       <GlobalStyle />

@@ -25,19 +25,20 @@ function Footer() {
   return (
     <FootBar>
       <TextContainer>
-        <h3> © 2023 moopa.live | Website Made by Liaxo</h3>
+        <h3> © 2023 tanoshii.live | Website Made by Liaxo</h3>
         <p>
-          This site does not store any files on our server, we only linked to
-          the media which is hosted on 3rd party services
+          This site does not store any files on our server, it only links to
+          media hosted by 3rd party services.
         </p>
+        <h4>Version: {localStorage.getItem("version")}</h4>
       </TextContainer>
     </FootBar>
   );
 }
 
 const TextContainer = styled.div`
-  padding: 0.5%;
-  font-size: 85%;
+  padding: 1%;
+  font-size: 75%;
 `;
 
 const FootBar = styled.section`
