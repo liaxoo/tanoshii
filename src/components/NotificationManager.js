@@ -1,5 +1,5 @@
 import { MantineProvider } from "@mantine/core";
-import { FiAlertCircle, FiCheck, FiX } from "react-icons/fi";
+import { FiAlertCircle, FiCheck, FiX, FiInfo } from "react-icons/fi";
 import { Group, Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import styled from "styled-components";
@@ -49,6 +49,27 @@ function Success({ text }) {
     }),
   });
 }
+function Update({ newVersion, currentVersion }) {
+  notifications.show({
+    title: `Tanoshii has been updated!`,
+    message: `Tanoshii has been updated from ${currentVersion} to ${newVersion}.`,
+    autoClose: 5000,
+    color: "indigo 8",
+    icon: <FiInfo />,
+    styles: (theme) => ({
+      root: {
+        backgroundColor: COLORS.colorPopup,
+      },
+
+      title: { color: "white" },
+      description: { color: COLORS.textColorSecondary },
+      closeButton: {
+        color: "white",
+        "&:hover": { backgroundColor: COLORS.colorPopupSecondary },
+      },
+    }),
+  });
+}
 function Error({ text }) {
   notifications.show({
     title: "Error",
@@ -72,4 +93,4 @@ function Error({ text }) {
 }
 
 export default SignIn;
-export { SignIn, Success, Error };
+export { SignIn, Success, Error, Update };
