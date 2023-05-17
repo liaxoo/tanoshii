@@ -45,8 +45,8 @@ const FootBar = styled.section`
   text-align: center;
   width: 100%;
   background: ${COLORS.colorPopup};
-  bottom: 0;
-  position: inherit;
+  top: 90%;
+  position: relative;
 `;
 
 const Shadow = styled.div`
