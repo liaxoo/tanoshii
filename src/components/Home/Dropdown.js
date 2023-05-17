@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 import ProfileSkeleton from "../skeletons/ProfileSkeleton";
 import { Link } from "react-router-dom";
-import { FiSearch, FiUser, FiCoffee } from "react-icons/fi";
+import { FiSearch, FiUser, FiCoffee, FiUserPlus } from "react-icons/fi";
 import { IconContext } from "react-icons";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 
@@ -76,6 +76,11 @@ function NavAvatar() {
   }
   return (
     <Menu shadow="md" width={200}>
+      {!localStorage.getItem("anilistClientId") && (
+        <Link to={`/login`} style={{ textDecoration: "none" }}>
+          <FiUserPlus style={{ color: "white", marginLeft: 10 }} />{" "}
+        </Link>
+      )}
       <Menu.Target>
         <Right>
           {width <= 600 && (
@@ -90,7 +95,11 @@ function NavAvatar() {
               }}
             >
               <div>
-                <FiUser style={{ color: "white", marginLeft: 10 }} />
+                {localStorage.getItem("anilistClientId") ? (
+                  <FiUser style={{ color: "white", marginLeft: 10 }} />
+                ) : (
+                  <div></div>
+                )}
               </div>
             </IconContext.Provider>
           )}
