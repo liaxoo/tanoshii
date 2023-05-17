@@ -25,7 +25,7 @@ function App() {
   const storedVersion = localStorage.getItem("version");
   const currentVersion = "1.0.0";
   const isNewUpdateAvailable = currentVersion > storedVersion;
-  if (isNewUpdateAvailable) {
+  if (isNewUpdateAvailable || !localStorage.getItem("version")) {
     localStorage.setItem("version", currentVersion);
     Update({ currentVersion: storedVersion, newVersion: currentVersion });
   }
