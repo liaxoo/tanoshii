@@ -6,7 +6,13 @@ import toast from "react-hot-toast";
 
 import ProfileSkeleton from "../skeletons/ProfileSkeleton";
 import { Link } from "react-router-dom";
-import { FiSearch, FiUser, FiCoffee, FiUserPlus } from "react-icons/fi";
+import {
+  FiSearch,
+  FiUser,
+  FiCoffee,
+  FiUserPlus,
+  FiMessageCircle,
+} from "react-icons/fi";
 import { IconContext } from "react-icons";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 
@@ -127,6 +133,16 @@ function NavAvatar() {
         >
           <Menu.Item icon={<FiCoffee size={14} style={{ marginBottom: 0 }} />}>
             Donate
+          </Menu.Item>
+        </a>
+        <a
+          href="https://discord.gg/3KJrFatekv"
+          style={{ margin: 0, textDecoration: "none" }}
+        >
+          <Menu.Item
+            icon={<FiMessageCircle size={14} style={{ marginBottom: 0 }} />}
+          >
+            Discord
           </Menu.Item>
         </a>
         <Menu.Divider />
