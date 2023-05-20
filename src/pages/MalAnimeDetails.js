@@ -242,14 +242,14 @@ function MalAnimeDetails() {
       });
     await axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/info/${aniRes.data.data.Media.id}?provider=gogoanime`
+        `${process.env.REACT_APP_BACKEND_URL}/episodes/${aniRes.data.data.Media.id}?provider=zoro`
       )
       .catch((err) => {
         //setNotAvailable(true);
-        Error({ text: err });
       })
       .then((data) => {
-        setEpisode(data.data.episodes);
+        console.log(data);
+        setEpisode(data.data)
       });
     setMalResponse(malRes.data);
     setLoading(false);

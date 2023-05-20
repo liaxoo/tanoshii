@@ -8,6 +8,7 @@
     "@mantine/notifications": "^6.0.9",
     "@testing-library/react": "^13.1.1",
     "axios": "^0.26.1",
+    "cors": "^2.8.5",
     "hls.js": "^1.1.5",
     "i": "^0.3.7",
     "npm": "^9.6.5",

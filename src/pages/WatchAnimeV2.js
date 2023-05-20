@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
@@ -26,6 +26,7 @@ function WatchAnimeV2() {
   const slug = useParams().episode;
   const id = useParams().id;
   const episode = useParams().number;
+  const [subtitles, setSubtitles] = useState();
   const [episodeLinks, setEpisodeLinks] = useState();
   const [currentServer, setCurrentServer] = useState("");
   const [downloadLink, setDownloadLink] = useState();
@@ -34,25 +35,28 @@ function WatchAnimeV2() {
   const { width } = useWindowDimensions();
   const [fullScreen, setFullScreen] = useState(false);
   const [internalPlayer, setInternalPlayer] = useState(true);
+  const [episodes, setEpisodes] = useState();
+
   useEffect(() => {
     getEpisodeLinks();
   }, [episode]);
 
   useEffect(() => {
-    console.log(episodeLinks);
-  }, [episodeLinks]);
+  }, [episodeLinks, subtitles]);
   async function getEpisodeLinks() {
     setLoading(true);
     window.scrollTo(0, 0);
 
     try {
       let res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/watch/${slug}`
+        `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${slug}`
       );
-
+      setSubtitles(res.data.subtitles);
+      console.log(res.data.sources)
       setEpisodeLinks(res.data.sources);
       setDownloadLink(res.data.download);
       setCurrentServer(res.data.gogoLink);
+
       if (!res.data.sources) {
         setInternalPlayer(true);
       }
@@ -77,6 +81,18 @@ function WatchAnimeV2() {
         animeId: id,
         progress: episode,
       });
+
+      await axios
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/episodes/${id}?provider=zoro`
+        )
+        .catch((err) => {
+          //setNotAvailable(true);
+        })
+        .then((data) => {
+          setEpisodes(data.data);
+        });
+
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -134,11 +150,10 @@ function WatchAnimeV2() {
               <div>
                 <Titles>
                   <p>
-                    <span>{`${
-                      animeDetails.title.english !== null
+                    <span>{`${animeDetails.title.english !== null
                         ? animeDetails.title.english
                         : animeDetails.title.userPreferred
-                    } ${episodeLinks.isDub ? "(Dub)" : "(Sub)"}`}</span>
+                      } ${episodeLinks.isDub ? "(Dub)" : "(Sub)"}`}</span>
                     {` Episode - ${episode}`}
                   </p>
                   {width <= 600 && (
@@ -196,10 +211,13 @@ function WatchAnimeV2() {
                 <div>
                   {episodeLinks && episodeLinks.length > 0 ? (
                     <VideoPlayer
-                      sources={episodeLinks[3].url}
+                      sources={"https://cors.zimjs.com/" + episodeLinks[3].url}
                       type={"m3u8"}
                       title={`${animeDetails.title}EP${episode}`}
                       downloadLink={downloadLink}
+                      subtitlesArray={subtitles}
+                      totalEpisodes={episodeLinks.totalEpisodes}
+                      currentEpisode={episode}
                     />
                   ) : (
                     <p>Loading...</p> // Or any other loading indicator
@@ -218,16 +236,13 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={`/play/${
-                            slug.substring(0, slug.lastIndexOf("-episode-")) +
-                            `-episode-${parseInt(episode) - 1}`
-                          }/${id}/${parseInt(episode) - 1}`}
+                          to={`/play/${episodes[episode - 1].id}/${id}/${parseInt(episode) - 1}`}
                           style={
                             parseInt(episode) === 1
                               ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
+                                pointerEvents: "none",
+                                color: "rgba(255,255,255, 0.2)",
+                              }
                               : {}
                           }
                         >
@@ -248,17 +263,14 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={`/play/${
-                            slug.substring(0, slug.lastIndexOf("-episode-")) +
-                            `-episode-${parseInt(episode) + 1}`
-                          }/${id}/${parseInt(episode) + 1}`}
+                          to={`/play/${episodes[episode].id}/${id}/${parseInt(episode) + 1}`}
                           style={
                             parseInt(episode) ===
-                            parseInt(episodeLinks.totalEpisodes)
+                              parseInt(episodeLinks.totalEpisodes)
                               ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
+                                pointerEvents: "none",
+                                color: "rgba(255,255,255, 0.2)",
+                              }
                               : {}
                           }
                         >
@@ -272,12 +284,9 @@ function WatchAnimeV2() {
                 <EpisodesWrapper>
                   <p>Episodes</p>
                   <Episodes>
-                    {[...Array(parseInt(animeDetails.episodes))].map((x, i) => (
+                    {[...Array(parseInt(episodes.length))].map((x, i) => (
                       <EpisodeLink
-                        to={`/play/${
-                          slug.substring(0, slug.lastIndexOf("-episode-")) +
-                          `-episode-${parseInt(i) + 1}`
-                        }/${id}/${parseInt(i) + 1}`}
+                        to={`/play/${episodes[i].id}/${id}/${parseInt(i) + 1}`}
                         style={
                           i + 1 <= parseInt(episode)
                             ? { backgroundColor: "#7676ff" }
