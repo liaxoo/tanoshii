@@ -52,7 +52,6 @@ function WatchAnimeV2() {
         `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${slug}`
       );
       setSubtitles(res.data.subtitles);
-      console.log(res.data.sources)
       setEpisodeLinks(res.data.sources);
       setDownloadLink(res.data.download);
       setCurrentServer(res.data.gogoLink);
@@ -151,9 +150,9 @@ function WatchAnimeV2() {
                 <Titles>
                   <p>
                     <span>{`${animeDetails.title.english !== null
-                        ? animeDetails.title.english
-                        : animeDetails.title.userPreferred
-                      } ${episodeLinks.isDub ? "(Dub)" : "(Sub)"}`}</span>
+                      ? animeDetails.title.english
+                      : animeDetails.title.userPreferred
+                      } ${localStorage.getItem("dub") === "true" ? "(Dub)" : "(Sub)"}`}</span>
                     {` Episode - ${episode}`}
                   </p>
                   {width <= 600 && (
@@ -235,20 +234,39 @@ function WatchAnimeV2() {
                           },
                         }}
                       >
-                        <EpisodeLinks
-                          to={`/play/${episodes[episode - 1].id}/${id}/${parseInt(episode) - 1}`}
-                          style={
-                            parseInt(episode) === 1
-                              ? {
-                                pointerEvents: "none",
-                                color: "rgba(255,255,255, 0.2)",
-                              }
-                              : {}
-                          }
-                        >
-                          <HiArrowSmLeft />
-                          Previous
-                        </EpisodeLinks>
+                        {localStorage.getItem("dub") === "true" ? (
+                          <EpisodeLinks
+                            to={`/play/${episodes[episode].id.slice(0, -3) + "dub"}/${id}/${parseInt(episode) - 1}`}
+                            style={
+                              parseInt(episode) ===
+                                parseInt(episodeLinks.totalEpisodes)
+                                ? {
+                                  pointerEvents: "none",
+                                  color: "rgba(255,255,255, 0.2)",
+                                }
+                                : {}
+                            }
+                          >
+                            Next
+                            <HiArrowSmLeft />
+                          </EpisodeLinks>
+                        ) : (
+                          <EpisodeLinks
+                            to={`/play/${episodes[episode].id}/${id}/${parseInt(episode) - 1}`}
+                            style={
+                              parseInt(episode) ===
+                                parseInt(episodeLinks.totalEpisodes)
+                                ? {
+                                  pointerEvents: "none",
+                                  color: "rgba(255,255,255, 0.2)",
+                                }
+                                : {}
+                            }
+                          >                            <HiArrowSmLeft />
+                            Previous
+
+                          </EpisodeLinks>
+                        )}
                       </IconContext.Provider>
                     )}
                     {width > 600 && (
@@ -262,21 +280,40 @@ function WatchAnimeV2() {
                           },
                         }}
                       >
-                        <EpisodeLinks
-                          to={`/play/${episodes[episode].id}/${id}/${parseInt(episode) + 1}`}
-                          style={
-                            parseInt(episode) ===
-                              parseInt(episodeLinks.totalEpisodes)
-                              ? {
-                                pointerEvents: "none",
-                                color: "rgba(255,255,255, 0.2)",
-                              }
-                              : {}
-                          }
-                        >
-                          Next
-                          <HiArrowSmRight />
-                        </EpisodeLinks>
+                        {localStorage.getItem("dub") === "true" ? (
+                          <EpisodeLinks
+                            to={`/play/${episodes[episode].id.slice(0, -3) + "dub"}/${id}/${parseInt(episode) + 1}`}
+                            style={
+                              parseInt(episode) ===
+                                parseInt(episodeLinks.totalEpisodes)
+                                ? {
+                                  pointerEvents: "none",
+                                  color: "rgba(255,255,255, 0.2)",
+                                }
+                                : {}
+                            }
+                          >
+                            Next
+                            <HiArrowSmRight />
+                          </EpisodeLinks>
+                        ) : (
+                          <EpisodeLinks
+                            to={`/play/${episodes[episode].id}/${id}/${parseInt(episode) + 1}`}
+                            style={
+                              parseInt(episode) ===
+                                parseInt(episodeLinks.totalEpisodes)
+                                ? {
+                                  pointerEvents: "none",
+                                  color: "rgba(255,255,255, 0.2)",
+                                }
+                                : {}
+                            }
+                          >
+                            Next
+                            <HiArrowSmRight />
+                          </EpisodeLinks>
+                        )}
+
                       </IconContext.Provider>
                     )}
                   </EpisodeButtons>
@@ -286,7 +323,7 @@ function WatchAnimeV2() {
                   <Episodes>
                     {[...Array(parseInt(episodes.length))].map((x, i) => (
                       <EpisodeLink
-                        to={`/play/${episodes[i].id}/${id}/${parseInt(i) + 1}`}
+                        to={`/play/${localStorage.getItem("dub") === "true" ? episodes[i].id.slice(0, -3) + "dub" : episodes[i].id}/${id}/${parseInt(i) + 1}`}
                         style={
                           i + 1 <= parseInt(episode)
                             ? { backgroundColor: "#7676ff" }
@@ -296,6 +333,7 @@ function WatchAnimeV2() {
                         {i + 1}
                       </EpisodeLink>
                     ))}
+
                   </Episodes>
                 </EpisodesWrapper>
               </VideoPlayerWrapper>

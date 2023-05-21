@@ -7,7 +7,7 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import { searchByIdQuery } from "../hooks/searchQueryStrings";
 import { IconContext } from "react-icons";
 import { Menu, Text } from "@mantine/core";
-
+import toast from "react-hot-toast";
 import { FiHeart, FiEdit } from "react-icons/fi";
 import {
   MalToAniList,
@@ -20,24 +20,34 @@ import { COLORS } from "../styles/colors";
 import { SignIn, Success, Error } from "../components/NotificationManager";
 function MalAnimeDetails() {
   const id = useParams().id;
-  const watching = false;
-
-  const [loading, setLoading] = useState(true);
+  const watching = false; const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const { width } = useWindowDimensions();
   const [anilistResponse, setAnilistResponse] = useState();
   const [malResponse, setMalResponse] = useState();
   const [expanded, setExpanded] = useState(false);
   const [dub, setDub] = useState(false);
+  const [toggleDub, setToggleDub] = useState(true);
   const [notAvailable, setNotAvailable] = useState(false);
   const [episode, setEpisode] = useState(null);
+  async function checkForDub(episodess) {
+    let modifiedSlug = episodess.slice(0, -3) + "dub";
+    try {
+      await axios.get(
+        `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${modifiedSlug}`
+      );
+      setDub(true);
+    } catch (err) {
+      console.log(err);
+    }
+  }
   function ChangeStatus() {
     return (
       <Menu shadow="md" width={200}>
         <Menu.Target>
           <div>
             <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
-              <ButtonChange className="outline-favorite" onClick={() => {}}>
+              <ButtonChange className="outline-favorite" onClick={() => { }}>
                 <FiEdit color="white" size={"100%"} />
               </ButtonChange>
             </IconContext.Provider>
@@ -248,9 +258,27 @@ function MalAnimeDetails() {
         //setNotAvailable(true);
       })
       .then((data) => {
-        console.log(data);
         setEpisode(data.data)
+        checkForDub(data.data[0].id);
+
       });
+
+
+    /*
+        await episode
+    let modifiedSlug = episode[0].id.slice(0, -3) + "dub";
+    try {
+      await axios.get(
+        `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${modifiedSlug}`
+      );
+      setDub(true);
+    } catch (err) {
+      console.log(err)
+    }
+    */
+
+
+
     setMalResponse(malRes.data);
     setLoading(false);
   }
@@ -288,17 +316,21 @@ function MalAnimeDetails() {
               <ContentWrapper>
                 <Poster>
                   <img src={anilistResponse.coverImage.extraLarge} alt="" />
-                  <Button to={`/play/${malResponse.subLink}/1`}>
+                  <Button to={`/play/${episode[0].id}/${id}/${1}`}>
                     Watch Sub
                   </Button>
-                  {malResponse.isDub && (
+                  {dub && (
+
                     <Button
                       className="outline"
-                      to={`/play/${malResponse.dubLink}/1`}
+                      to={`/play/${episode[0].id.slice(0, -3) + "dub"}/${id}/${1}`}
+                      onClick={localStorage.setItem("dub", true)}
                     >
                       Watch Dub
                     </Button>
+
                   )}
+
                 </Poster>
                 <div>
                   <h1>{anilistResponse.title.userPreferred}</h1>
@@ -368,13 +400,13 @@ function MalAnimeDetails() {
               <Episode>
                 <DubContainer>
                   <h2>Episodes</h2>
-                  {malResponse.isDub && (
+                  {dub && (
                     <div class="switch">
                       <label for="switch">
                         <input
                           type="checkbox"
                           id="switch"
-                          onChange={(e) => setDub(!dub)}
+                          onChange={(e) => { setToggleDub(!toggleDub); localStorage.setItem("dub", toggleDub); console.log(localStorage.getItem("dub")) }}
                         ></input>
                         <span class="indicator"></span>
                         <span class="label">{dub ? "Dub" : "Sub"}</span>
@@ -384,12 +416,23 @@ function MalAnimeDetails() {
                 </DubContainer>
                 {width > 600 && (
                   <Episodes>
-                    {episode?.length > 0 &&
+                    {episode?.length > 0 && toggleDub &&
                       episode?.map((epi, index) => {
                         return (
                           <EpisodeLink
                             key={index}
                             to={`/play/${epi.id}/${id}/${index + 1}`}
+                          >
+                            Episode {index + 1}
+                          </EpisodeLink>
+                        );
+                      })}
+                    {episode?.length > 0 && !toggleDub &&
+                      episode?.map((epi, index) => {
+                        return (
+                          <EpisodeLink
+                            key={index}
+                            to={`/play/${epi.id.slice(0, -3) + "dub"}/${id}/${index + 1}`}
                           >
                             Episode {index + 1}
                           </EpisodeLink>

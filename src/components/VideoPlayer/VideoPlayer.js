@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { BiArrowToBottom, BiFullscreen } from "react-icons/bi";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
-import { BsSkipEnd } from "react-icons/bs";
+import { BsSkipEnd, BsFillBadgeCcFill } from "react-icons/bs";
 import {
   MdPlayDisabled,
   MdPlayArrow,
@@ -17,6 +17,7 @@ import Hls from "hls.js";
 import plyr from "plyr";
 import "plyr/dist/plyr.css";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const VideoPlayer = ({ sources, type, title, subtitlesArray, totalEpisodes,
   currentEpisode, internalPlayer,
@@ -25,7 +26,10 @@ const VideoPlayer = ({ sources, type, title, subtitlesArray, totalEpisodes,
   const { width } = useWindowDimensions();
   const navigate = useNavigate();
   const slug = useParams().slug;
+  const episodeLink = useParams().episode;
   const episode = useParams().episode;
+  const id = useParams().id;
+  const number = useParams().number;
   const [selectedQuality, setSelectedQuality] = useState('auto');
   let src = sources;
   const [player, setPlayer] = useState(null);
@@ -35,6 +39,8 @@ const VideoPlayer = ({ sources, type, title, subtitlesArray, totalEpisodes,
       ? JSON.parse(localStorage.getItem("sync"))
       : false
   );
+  const isDub = localStorage.getItem("dub") === "true";
+  const opacityValue = isDub ? '25%' : '100%';
   // Language code mapping
   const languageCodes = useMemo(() => {
     return subtitlesArray.reduce((acc, subtitle) => {
@@ -58,6 +64,39 @@ const VideoPlayer = ({ sources, type, title, subtitlesArray, totalEpisodes,
     });
     localStorage.setItem("sync", data);
     setSync(data);
+  }
+  async function dubSwitch() {
+    if (isDub) {
+      toast.success("Finding sub episode...");
+      let modifiedSlug = episodeLink.slice(0, -3) + "sub";
+
+      try {
+        await axios.get(
+          `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${modifiedSlug}`
+        );
+        localStorage.setItem("dub", false);
+        toast.success("Sub found!");
+        window.location.href = `/play/${modifiedSlug}/${id}/${number}`;
+      } catch (err) {
+        toast.error("Sub not available.");
+      }
+    }
+    else {
+      toast.success("Finding dub episode...");
+      let modifiedSlug = episodeLink.slice(0, -3) + "dub";
+
+      try {
+        await axios.get(
+          `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${modifiedSlug}`
+        );
+        localStorage.setItem("dub", true);
+        toast.success("Dub found!");
+        window.location.href = `/play/${modifiedSlug}/${id}/${number}`;
+      } catch (err) {
+        toast.error("Dub not available.");
+      }
+    }
+
   }
   function skipIntro() {
     player.forward(85);
@@ -283,8 +322,8 @@ const VideoPlayer = ({ sources, type, title, subtitlesArray, totalEpisodes,
               </button>
             </div>
             <div className="tooltip">
-              <button title="Skip Intro" onClick={() => skipIntro()}>
-                <BsSkipEnd />
+              <button title="Toggle Dub" onClick={() => dubSwitch()}>
+                <BsFillBadgeCcFill style={{ opacity: opacityValue }} />
               </button>
             </div>
           </div>
