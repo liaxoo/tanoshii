@@ -406,7 +406,7 @@ function MalAnimeDetails() {
                         <input
                           type="checkbox"
                           id="switch"
-                          onChange={(e) => { setToggleDub(!toggleDub); localStorage.setItem("dub", toggleDub); console.log(localStorage.getItem("dub")) }}
+                          onChange={(e) => { setToggleDub(!toggleDub); localStorage.setItem("dub", toggleDub) }}
                         ></input>
                         <span class="indicator"></span>
                         <span class="label">{dub ? "Dub" : "Sub"}</span>

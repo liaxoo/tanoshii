@@ -167,6 +167,7 @@ export let searchByIdQuery = `
 				day
 			}
       episodes
+	  
 			averageScore
 			bannerImage
 			coverImage {

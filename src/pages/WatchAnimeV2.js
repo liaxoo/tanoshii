@@ -73,7 +73,7 @@ function WatchAnimeV2() {
           },
         },
       }).catch((err) => {
-        console.log(err);
+        toast.error("There was an error attempting to locate the anime. Please refresh." + err);
       });
       setAnimeDetails(aniRes.data.data.Media);
       ChangeAnimeEpisode({
@@ -86,7 +86,8 @@ function WatchAnimeV2() {
           `${process.env.REACT_APP_BACKEND_URL}/episodes/${id}?provider=zoro`
         )
         .catch((err) => {
-          //setNotAvailable(true);
+          toast.error("There was an error attempting to locate the anime. Please refresh." + err);
+
         })
         .then((data) => {
           setEpisodes(data.data);
@@ -94,8 +95,10 @@ function WatchAnimeV2() {
 
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      toast.error("There was an error attempting to locate the anime. Please refresh." + error);
     }
+
+
   }
 
   function fullScreenHandler(e) {
@@ -234,39 +237,23 @@ function WatchAnimeV2() {
                           },
                         }}
                       >
-                        {localStorage.getItem("dub") === "true" ? (
-                          <EpisodeLinks
-                            to={`/play/${episodes[episode].id.slice(0, -3) + "dub"}/${id}/${parseInt(episode) - 1}`}
-                            style={
-                              parseInt(episode) ===
-                                parseInt(episodeLinks.totalEpisodes)
-                                ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                                : {}
-                            }
-                          >
-                            Next
-                            <HiArrowSmLeft />
-                          </EpisodeLinks>
-                        ) : (
-                          <EpisodeLinks
-                            to={`/play/${episodes[episode].id}/${id}/${parseInt(episode) - 1}`}
-                            style={
-                              parseInt(episode) ===
-                                parseInt(episodeLinks.totalEpisodes)
-                                ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                                : {}
-                            }
-                          >                            <HiArrowSmLeft />
-                            Previous
+                        <EpisodeLinks
+                          to={localStorage.getItem("dub") === "false" ? `/play/${episodes[parseInt(episode) - 1].id}/${id}/${parseInt(episode) - 1}` : `/play/${episodes[parseInt(episode) - 1].id.slice(0, -3) + "dub"}/${id}/${parseInt(episode) - 1}`}
+                          style={
+                            parseInt(episode) ===
+                              1
+                              ? {
+                                pointerEvents: "none",
+                                color: "rgba(255,255,255, 0.2)",
+                              }
+                              : {}
+                          }
+                        >
+                          <HiArrowSmLeft />
+                          Previous
 
-                          </EpisodeLinks>
-                        )}
+                        </EpisodeLinks>
+
                       </IconContext.Provider>
                     )}
                     {width > 600 && (
@@ -280,40 +267,21 @@ function WatchAnimeV2() {
                           },
                         }}
                       >
-                        {localStorage.getItem("dub") === "true" ? (
-                          <EpisodeLinks
-                            to={`/play/${episodes[episode].id.slice(0, -3) + "dub"}/${id}/${parseInt(episode) + 1}`}
-                            style={
-                              parseInt(episode) ===
-                                parseInt(episodeLinks.totalEpisodes)
-                                ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                                : {}
-                            }
-                          >
-                            Next
-                            <HiArrowSmRight />
-                          </EpisodeLinks>
-                        ) : (
-                          <EpisodeLinks
-                            to={`/play/${episodes[episode].id}/${id}/${parseInt(episode) + 1}`}
-                            style={
-                              parseInt(episode) ===
-                                parseInt(episodeLinks.totalEpisodes)
-                                ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                                : {}
-                            }
-                          >
-                            Next
-                            <HiArrowSmRight />
-                          </EpisodeLinks>
-                        )}
+                        <EpisodeLinks
+                          to={localStorage.getItem("dub") === "true" ? `/play/${episodes[episode - 1].id.slice(0, -3) + "dub"}/${id}/${parseInt(episode) + 1}` : `/play/${episodes[episode - 1].id}/${id}/${parseInt(episode) + 1}`}
+                          style={
+                            parseInt(episode) === parseInt(animeDetails.episodes)
 
+                              ? {
+                                pointerEvents: "none",
+                                color: "rgba(255,255,255, 0.2)",
+                              }
+                              : {}
+                          }
+                        >
+                          Next
+                          <HiArrowSmRight />
+                        </EpisodeLinks>
                       </IconContext.Provider>
                     )}
                   </EpisodeButtons>
