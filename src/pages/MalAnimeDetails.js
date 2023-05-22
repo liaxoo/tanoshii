@@ -26,8 +26,10 @@ function MalAnimeDetails() {
   const [anilistResponse, setAnilistResponse] = useState();
   const [malResponse, setMalResponse] = useState();
   const [expanded, setExpanded] = useState(false);
+
   const [dub, setDub] = useState(false);
   const [toggleDub, setToggleDub] = useState(true);
+
   const [notAvailable, setNotAvailable] = useState(false);
   const [episode, setEpisode] = useState(null);
   async function checkForDub(episodess) {
@@ -210,6 +212,8 @@ function MalAnimeDetails() {
     } else Error({ text: "You must be logged in to use this feature." });
   }
   async function getInfo() {
+    localStorage.setItem("dub", false);
+
     window.scrollTo(0, 0);
     if (id === "null") {
       setNotAvailable(true);
@@ -324,7 +328,7 @@ function MalAnimeDetails() {
                     <Button
                       className="outline"
                       to={`/play/${episode[0].id.slice(0, -3) + "dub"}/${id}/${1}`}
-                      onClick={localStorage.setItem("dub", true)}
+                    //onClick={localStorage.setItem("dub", true)}
                     >
                       Watch Dub
                     </Button>
@@ -406,7 +410,7 @@ function MalAnimeDetails() {
                         <input
                           type="checkbox"
                           id="switch"
-                          onChange={(e) => { setToggleDub(!toggleDub); localStorage.setItem("dub", toggleDub) }}
+                          onChange={(e) => { setToggleDub(!toggleDub); localStorage.setItem("dub", toggleDub); }}
                         ></input>
                         <span class="indicator"></span>
                         <span class="label">{dub ? "Dub" : "Sub"}</span>

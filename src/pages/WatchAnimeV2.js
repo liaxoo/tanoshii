@@ -155,7 +155,7 @@ function WatchAnimeV2() {
                     <span>{`${animeDetails.title.english !== null
                       ? animeDetails.title.english
                       : animeDetails.title.userPreferred
-                      } ${localStorage.getItem("dub") === "true" ? "(Dub)" : "(Sub)"}`}</span>
+                      } ${localStorage.getItem("dub") === 'true' ? "(Dub)" : "(Sub)"}`}</span>
                     {` Episode - ${episode}`}
                   </p>
                   {width <= 600 && (
