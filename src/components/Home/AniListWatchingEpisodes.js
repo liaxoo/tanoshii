@@ -95,11 +95,15 @@ function AniListWatchingEpisodes() {
             }}
             breakpoints={{
               "@0.00": {
-                slidesPerView: 3,
+                slidesPerView: 2.75,
                 spaceBetween: 15,
               },
+              "@0.50": {
+                slidesPerView: 3,
+                spaceBetween: 20,
+              },
               "@0.75": {
-                slidesPerView: 4,
+                slidesPerView: 3.25,
                 spaceBetween: 20,
               },
               "@1.00": {
@@ -202,7 +206,7 @@ const Wrapper = styled.div`
       }
     }
     @media screen and (max-width: 400px) {
-      width: 120px;
+      width: 100%;
       height: 192px;
       &:hover {
         box-shadow: none;
