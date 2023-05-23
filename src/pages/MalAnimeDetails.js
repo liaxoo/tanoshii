@@ -18,6 +18,7 @@ import {
 } from "../components/Home/AnimeFunctions";
 import { COLORS } from "../styles/colors";
 import { SignIn, Success, Error } from "../components/NotificationManager";
+import AnimeCards from "../components/Home/AnimeCards";
 function MalAnimeDetails() {
   const id = useParams().id;
   const watching = false; const [loading, setLoading] = useState(true);
@@ -242,7 +243,6 @@ function MalAnimeDetails() {
         console.log("Error:", error.message);
       }
     });
-
     let watchRes = null;
 
     setAnilistResponse(aniRes.data.data.Media);
@@ -325,13 +325,13 @@ function MalAnimeDetails() {
                   </Button>
                   {dub && (
 
-                    <Button
+                    <Button3
                       className="outline"
                       to={`/play/${episode[0].id.slice(0, -3) + "dub"}/${id}/${1}`}
                     //onClick={localStorage.setItem("dub", true)}
                     >
                       Watch Dub
-                    </Button>
+                    </Button3>
 
                   )}
 
@@ -463,13 +463,47 @@ function MalAnimeDetails() {
                   </Episodes>
                 )}
               </Episode>
+              <RecommendationsContainer>
+                <RecommendationsText>Recommendations</RecommendationsText>
+                {anilistResponse ? <AnimeCards episodes={anilistResponse.recommendations.edges} /> : <></>}
+              </RecommendationsContainer>
+
             </div>
           )}
+
         </Content>
+
       )}
+
     </div>
   );
 }
+
+const RecommendationsContainer = styled.div`
+    margin: 2rem;
+    font-size: 1rem;
+    color: #b5c3de;
+    span {
+      font-weight: 700;
+      color: white;
+    }
+    p {
+      font-weight: 300;
+      text-align: justify;
+    }
+    h1 {
+      font-weight: 700;
+      color: white;
+    }
+`
+
+const RecommendationsText = styled.h1`
+      font-weight: 700;
+      color: white;
+
+        padding-bottom: 1rem;
+        padding-top: 1rem;
+`
 
 const BannerContainer = styled.div`
   position: relative;
@@ -843,5 +877,28 @@ const Button = styled(Link)`
     width: 100%;
   }
 `;
+const Button3 = styled(Link)`
+position: relative;
+  font-size: 1.2rem;
+  padding: 1rem 3.4rem;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  background-color: #7676ff;
+  font-weight: 700;
+  border-radius: 0.4rem;
+  position: relative;
+  top: -25%;
+  white-space: nowrap;
+
+  @media screen and (max-width: 600px) {
+    display: block;
+    width: 100%;
+  }
+    @media screen and (min-width: 1200px) {
+    position: relative;
+  }
+`;
+
 
 export default MalAnimeDetails;

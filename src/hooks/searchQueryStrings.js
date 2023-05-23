@@ -174,6 +174,21 @@ export let searchByIdQuery = `
 				extraLarge
 				large
 			}
+			recommendations(sort: RATING_DESC) {
+				edges {
+					node {
+						mediaRecommendation {
+							title {
+								english
+							}
+							id
+							coverImage {
+								large
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 `;
