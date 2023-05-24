@@ -95,15 +95,11 @@ function AniListWatchingEpisodes() {
             }}
             breakpoints={{
               "@0.00": {
-                slidesPerView: 2.75,
+                slidesPerView: 3,
                 spaceBetween: 15,
               },
-              "@0.50": {
-                slidesPerView: 3,
-                spaceBetween: 20,
-              },
               "@0.75": {
-                slidesPerView: 3.25,
+                slidesPerView: 4,
                 spaceBetween: 20,
               },
               "@1.00": {
@@ -187,31 +183,20 @@ const Wrapper = styled.div`
     z-index: 2; // Add z-index to ensure closeButton is displayed above the image
   }
   img {
-    width: 200px;
-    height: 294px;
+width: 160px;
+height: 235px;
     border-radius: 0.5rem;
     margin-bottom: 0.3rem;
     object-fit: cover;
-    transition: all 0.3s ease;
-    &:hover {
-      filter: brightness(1.1);
-      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-      z-index: 1;
-    }
-    @media screen and (max-width: 600px) {
-      width: 150px;
-      height: 225px;
-      &:hover {
-        box-shadow: none;
-      }
-    }
-    @media screen and (max-width: 400px) {
-      width: 100%;
-      height: 192px;
-      &:hover {
-        box-shadow: none;
-      }
-    }
+
+@media screen and (max-width: 600px) {
+width: 120px;
+height: 180px;
+}
+@media screen and (max-width: 400px) {
+width: 100px;
+height: 160px;
+}
   }
 
   p {
