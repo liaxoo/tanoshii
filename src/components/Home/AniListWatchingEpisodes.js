@@ -25,25 +25,22 @@ function AniListWatchingEpisodes() {
   const [localData, setLocalData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [change, setChange] = useState(false);
-
+  const [animeDetails, setAnimeDetails] = useState(null);
   const userClientId = localStorage.getItem("anilistClientId");
 
-  function GetAnimeOf() {
-    const [loading, setLoading] = useState(true);
-    const [
-      AniListWatchingEpisodesData,
-      setAniListWatchingEpisodesData,
-    ] = useState([]);
+  useEffect(() => {
+    getData();
+  }, []);
 
-    useEffect(() => {
-      fetch(process.env.REACT_APP_BASE_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          query: `
+  async function getData() {
+    fetch(process.env.REACT_APP_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        query: `
         query ($clientId: Int!) {
           MediaListCollection(userId: $clientId, type: ANIME, status: CURRENT) {
             lists {
@@ -65,102 +62,93 @@ function AniListWatchingEpisodes() {
           }
         }
       `,
-          variables: {
-            clientId: userClientId,
-          },
-        }),
+        variables: {
+          clientId: userClientId,
+        },
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setAniListWatchingEpisodesData(data);
+        setLoading(false);
       })
-        .then((response) => response.json())
-        .then((data) => {
-          setAniListWatchingEpisodesData(data);
-          setLoading(false);
-        })
-        .catch((error) => Error({ error }));
-    }, []);
-
-    if (loading) {
-      return <AnimeCardsSkeleton />;
-    }
-
-    return (
-      <div>
-        {loading ? (
-          <AnimeCardsSkeleton />
-        ) : (
-          <Swiper
-            slidesPerView={7}
-            spaceBetween={35}
-            scrollbar={{
-              hide: true,
-            }}
-            breakpoints={{
-              "@0.00": {
-                slidesPerView: 3,
-                spaceBetween: 15,
-              },
-              "@0.75": {
-                slidesPerView: 4,
-                spaceBetween: 20,
-              },
-              "@1.00": {
-                slidesPerView: 4,
-                spaceBetween: 35,
-              },
-              "@1.30": {
-                slidesPerView: 5,
-                spaceBetween: 35,
-              },
-              "@1.50": {
-                slidesPerView: 7,
-                spaceBetween: 35,
-              },
-            }}
-            modules={[Scrollbar]}
-            className="mySwiper"
-          >
-            {AniListWatchingEpisodesData.data.MediaListCollection.lists[0].entries.map(
-              (item, i) => (
-                <SwiperSlide key={i}>
-                  <Wrapper>
-                    <IconContext.Provider
-                      value={{
-                        size: "1.2rem",
-                        color: "white",
-                        style: {
-                          verticalAlign: "middle",
-                        },
-                      }}
-                    >
-                      <button className="closeButton" onClick={() => { }}>
-                        <p>
-                          <GetAnimeEpisode
-                            clientId={userClientId}
-                            animeId={item.media.id}
-                          />
-                        </p>
-                      </button>
-                    </IconContext.Provider>
-
-                    <Link to={`id/${item.media.id}`}>
-                      <img src={item.media.coverImage.large} alt="" />
-                    </Link>
-                    <p>
-                      {item.media.title.english !== null
-                        ? item.media.title.english
-                        : item.media.title.native}
-                    </p>
-                  </Wrapper>
-                </SwiperSlide>
-              )
-            )}
-          </Swiper>
-        )}
-      </div>
-    );
+      .catch((error) => Error({ error }));
   }
+
   return (
     <div>
-      <GetAnimeOf />
+      {loading && <AnimeCardsSkeleton />}
+      {loading ? (
+        <AnimeCardsSkeleton />
+      ) : (
+        <Swiper
+          slidesPerView={7}
+          spaceBetween={35}
+          scrollbar={{
+            hide: true,
+          }}
+          breakpoints={{
+            "@0.00": {
+              slidesPerView: 3,
+              spaceBetween: 15,
+            },
+            "@0.75": {
+              slidesPerView: 4,
+              spaceBetween: 20,
+            },
+            "@1.00": {
+              slidesPerView: 4,
+              spaceBetween: 35,
+            },
+            "@1.30": {
+              slidesPerView: 5,
+              spaceBetween: 35,
+            },
+            "@1.50": {
+              slidesPerView: 7,
+              spaceBetween: 35,
+            },
+          }}
+          modules={[Scrollbar]}
+          className="mySwiper"
+        >
+          {AniListWatchingEpisodesData.data.MediaListCollection.lists[0].entries.map(
+            (item, i) => (
+              <SwiperSlide key={i}>
+                <Wrapper>
+                  <IconContext.Provider
+                    value={{
+                      size: "1.2rem",
+                      color: "white",
+                      style: {
+                        verticalAlign: "middle",
+                      },
+                    }}
+                  >
+                    <button className="closeButton" onClick={() => { }}>
+                      <p>
+                        <GetAnimeEpisode
+                          clientId={userClientId}
+                          animeId={item.media.id}
+                        />
+                      </p>
+                    </button>
+                  </IconContext.Provider>
+
+                  <Link to={`id/${item.media.id}`}>
+                    <img src={item.media.coverImage.large} alt="" />
+                  </Link>
+                  <p>
+                    {item.media.title.english !== null
+                      ? item.media.title.english
+                      : item.media.title.native}
+                  </p>
+                </Wrapper>
+              </SwiperSlide>
+            )
+          )}
+        </Swiper>
+      )}
     </div>
   );
 }
@@ -169,8 +157,7 @@ function AniListWatchingEpisodes() {
 
 const Wrapper = styled.div`
   position: relative;
-  overflow: hidden;
-  border-radius: 0.5rem;
+    border-radius: 0.5rem;
 
   .closeButton {
     position: absolute;

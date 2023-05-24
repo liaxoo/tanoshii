@@ -180,6 +180,7 @@ export let searchByIdQuery = `
 						mediaRecommendation {
 							title {
 								english
+								romaji
 							}
 							id
 							coverImage {

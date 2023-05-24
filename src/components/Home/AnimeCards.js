@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Scrollbar } from "swiper";
 import AnimeCardsSkeleton from "../../components/skeletons/AnimeCardsSkeleton";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 import "swiper/css";
 import "swiper/css/scrollbar";
@@ -19,6 +20,9 @@ function AnimeCards(props) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState(false);
+  const CLIPSIZE = 40;
+  const { height, width } = useWindowDimensions();
+
   useEffect(() => {
     getData();
   }, []);
@@ -37,7 +41,7 @@ function AnimeCards(props) {
           query: TrendingAnimeQuery,
           variables: {
             page: 1,
-            perPage: 7,
+            perPage: props.count,
           },
         },
       })
@@ -156,6 +160,10 @@ function AnimeCards(props) {
               slidesPerView: 7,
               spaceBetween: 35,
             },
+            "@2.00": {
+              slidesPerView: 10,
+              spaceBetween: 90,
+            },
           }}
           modules={[Scrollbar]}
           className="mySwiper"
@@ -166,7 +174,17 @@ function AnimeCards(props) {
                 <a href={`id/${item.node.mediaRecommendation.id}`}>
                   <img src={item.node.mediaRecommendation.coverImage.large} alt="" />
                 </a>
-                <p>{item.node.mediaRecommendation.title.english ? item.node.mediaRecommendation.title.english : item.node.mediaRecommendation.title.romaji}</p>
+                <p>
+                  {item.node.mediaRecommendation.english !== null
+                    ? item.node.mediaRecommendation.title.english.length > CLIPSIZE
+                      ? item.node.mediaRecommendation.title.english.substring(0, CLIPSIZE) +
+                      "..."
+                      : item.node.mediaRecommendation.title.english
+                    : item.node.mediaRecommendation.title.romaji.length > CLIPSIZE
+                      ? item.node.mediaRecommendation.title.romaji.substring(0, CLIPSIZE) + "..."
+                      : item.node.mediaRecommendation.title.romaji}
+
+                </p>
               </Wrapper>
             </SwiperSlide>
           )) : (
@@ -176,7 +194,32 @@ function AnimeCards(props) {
                   <Link to={`id/` + item.id}>
                     <img src={item.coverImage.large} alt="" />
                   </Link>
-                  <p>{item.title.english}</p>
+
+                  {width <= 600 ? (
+                    <p>
+                      {item.title.english !== null
+                        ? item.title.english.length > CLIPSIZE
+                          ? item.title.english.substring(0, CLIPSIZE) +
+                          "..."
+                          : item.title.english
+                        : item.title.romaji.length > CLIPSIZE
+                          ? item.title.romaji.substring(0, CLIPSIZE) + "..."
+                          : item.title.romaji}
+                    </p>
+                  ) : (
+                    <p>
+                      {item.title.english !== null
+                        ? item.title.english.length > CLIPSIZE + 20
+                          ? item.title.english.substring(0, CLIPSIZE + 50) +
+                          "..."
+                          : item.title.english
+                        : item.title.romaji.length > CLIPSIZE + 20
+                          ? item.title.romaji.substring(0, CLIPSIZE + 20) + "..."
+                          : item.title.romaji}
+                    </p>
+                  )}
+
+
                 </Wrapper>
               </SwiperSlide>
             ))
@@ -192,7 +235,6 @@ function AnimeCards(props) {
 
 const Wrapper = styled.div`
   position: relative;
-  overflow: hidden;
   border-radius: 0.5rem;
 img {
 width: 160px;

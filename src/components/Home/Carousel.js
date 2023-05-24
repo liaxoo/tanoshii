@@ -54,11 +54,11 @@ function Carousel({ images }) {
                           {item.title.english !== null
                             ? item.title.english.length > CLIPSIZE
                               ? item.title.english.substring(0, CLIPSIZE) +
-                                "..."
+                              "..."
                               : item.title.english
                             : item.title.romaji.length > CLIPSIZE
-                            ? item.title.romaji.substring(0, CLIPSIZE) + "..."
-                            : item.title.romaji}
+                              ? item.title.romaji.substring(0, CLIPSIZE) + "..."
+                              : item.title.romaji}
                         </p>
                       )}
                       {width > 600 && width <= 1100 && (
@@ -66,11 +66,11 @@ function Carousel({ images }) {
                           {item.title.english !== null
                             ? item.title.english.length > CLIPSIZE
                               ? item.title.english.substring(0, CLIPSIZE) +
-                                "..."
+                              "..."
                               : item.title.english
                             : item.title.romaji.length > 35
-                            ? item.title.romaji.substring(0, CLIPSIZE) + "..."
-                            : item.title.romaji}
+                              ? item.title.romaji.substring(0, CLIPSIZE) + "..."
+                              : item.title.romaji}
                         </p>
                       )}
                       {width > 1100 && (
@@ -91,6 +91,16 @@ function Carousel({ images }) {
                             },
                           }}
                         >
+                          <p>
+                            {item.title.english !== null
+                              ? item.title.english.length > CLIPSIZE - 20
+                                ? item.title.english.substring(0, CLIPSIZE - 20) +
+                                "..."
+                                : item.title.english
+                              : item.title.romaji.length > CLIPSIZE - 20
+                                ? item.title.romaji.substring(0, CLIPSIZE - 20) + "..."
+                                : item.title.romaji}
+                          </p>
                           <Button to={"id/" + item.id}>
                             <BsFillPlayFill />
                           </Button>

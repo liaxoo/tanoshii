@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import SearchResultsSkeleton from "../components/skeletons/SearchResultsSkeleton";
+import toast from "react-hot-toast";
 
 import { PopularAnimeQuery } from "../hooks/searchQueryStrings";
 
@@ -33,7 +34,7 @@ function PopularMovies() {
       },
     })
       .catch((err) => {
-        Error({ err });
+        toast.error("Failed to load anime. " + err)
       })
       .then((data) => {
         setLoading(false);

@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import SearchResultsSkeleton from "../components/skeletons/SearchResultsSkeleton";
 import { TrendingAnimeQuery } from "../hooks/searchQueryStrings";
+import toast from "react-hot-toast";
 
 function TrendingAnime() {
   let page = useParams().page;
@@ -32,7 +33,7 @@ function TrendingAnime() {
         },
       },
     }).catch((err) => {
-      console.log(err);
+      toast.error("Failed to load anime. " + err)
     });
     setLoading(false);
     setAnimeDetails(res.data.data.Page.media);
