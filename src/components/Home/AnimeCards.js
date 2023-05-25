@@ -171,20 +171,27 @@ function AnimeCards(props) {
           {recommendations ? data.map((item, i) => (
             <SwiperSlide>
               <Wrapper>
-                <a href={`id/${item.node.mediaRecommendation.id}`}>
-                  <img src={item.node.mediaRecommendation.coverImage.large} alt="" />
-                </a>
-                <p>
-                  {item.node.mediaRecommendation.english !== null
-                    ? item.node.mediaRecommendation.title.english.length > CLIPSIZE
-                      ? item.node.mediaRecommendation.title.english.substring(0, CLIPSIZE) +
-                      "..."
-                      : item.node.mediaRecommendation.title.english
-                    : item.node.mediaRecommendation.title.romaji.length > CLIPSIZE
-                      ? item.node.mediaRecommendation.title.romaji.substring(0, CLIPSIZE) + "..."
-                      : item.node.mediaRecommendation.title.romaji}
+                <div>
 
-                </p>
+
+
+
+                  <a href={`id/${item.node.mediaRecommendation.id}`}>
+                    <img src={item.node.mediaRecommendation.coverImage.large} alt="" />
+                  </a>
+                  <p>
+                    {item.node.mediaRecommendation.title.english !== null
+                      ? item.node.mediaRecommendation.title.english.length > CLIPSIZE
+                        ? item.node.mediaRecommendation.title.english.substring(0, CLIPSIZE) +
+                        "..."
+                        : item.node.mediaRecommendation.title.english
+                      : item.node.mediaRecommendation.title.romaji.length > CLIPSIZE
+                        ? item.node.mediaRecommendation.title.romaji.substring(0, CLIPSIZE) + "..."
+                        : item.node.mediaRecommendation.title.romaji}
+
+                  </p>
+                </div>
+
               </Wrapper>
             </SwiperSlide>
           )) : (

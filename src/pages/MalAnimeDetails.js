@@ -267,22 +267,6 @@ function MalAnimeDetails() {
 
       });
 
-
-    /*
-        await episode
-    let modifiedSlug = episode[0].id.slice(0, -3) + "dub";
-    try {
-      await axios.get(
-        `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${modifiedSlug}`
-      );
-      setDub(true);
-    } catch (err) {
-      console.log(err)
-    }
-    */
-
-
-
     setMalResponse(malRes.data);
     setLoading(false);
   }
