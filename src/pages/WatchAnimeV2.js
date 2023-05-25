@@ -43,6 +43,28 @@ function WatchAnimeV2() {
 
   useEffect(() => {
   }, [episodeLinks, subtitles]);
+
+  async function getDownloadLink() {
+    toast.success("Finding download link...");
+    //let modifiedSlug = episodeLink.slice(0, -3) + "sub";
+
+    try {
+      let episodeData = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/info/${id}`
+      );
+
+      let downloadLink = await axios.get(
+        `https://api.consumet.org/meta/anilist/watch/${episodeData.data.episodes[episode - 1].id}`
+      );
+      toast.success("Redirecting!");
+      window.open(`${downloadLink.data.download}`)
+    } catch (err) {
+      toast.error("Not available. ");
+    }
+
+
+  }
+
   async function getEpisodeLinks() {
     setLoading(true);
     window.scrollTo(0, 0);
@@ -167,13 +189,13 @@ function WatchAnimeV2() {
                         },
                       }}
                     >
-                      <a
-                        href={downloadLink}
+                      <Button
+                        onClick={getDownloadLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <BiArrowToBottom />
-                      </a>
+                      </Button>
                     </IconContext.Provider>
                   )}
                   {width > 600 && (
@@ -187,14 +209,14 @@ function WatchAnimeV2() {
                         },
                       }}
                     >
-                      <a
-                        href={downloadLink}
+                      <Button
+                        onClick={getDownloadLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Download
                         <BiArrowToBottom />
-                      </a>
+                      </Button>
                     </IconContext.Provider>
                   )}
                 </Titles>
@@ -572,5 +594,39 @@ const Titles = styled.div`
     }
   }
 `;
+
+const Button = styled.button`
+  
+display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  margin-bottom: 0.5rem;
+
+  span {
+    font-weight: 600;
+  }
+
+  
+    font-weight: 400;
+    background-color: #242235;
+    border: 1px solid #393653;
+    text-decoration: none;
+    color: white;
+    padding: 0.7rem 1.1rem 0.7rem 1.5rem;
+    border-radius: 0.4rem;
+  
+  @media screen and (max-width: 600px) {
+    margin-bottom: 1rem;
+    p {
+      font-size: 1.3rem;
+    }
+    a {
+      padding: 0.7rem;
+      border-radius: 50%;
+      margin-left: 1rem;
+    }
+  }
+  `
 
 export default WatchAnimeV2;

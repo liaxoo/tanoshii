@@ -23,7 +23,7 @@ import { Error, SignIn, Update } from "./components/NotificationManager";
 
 function App() {
   const storedVersion = localStorage.getItem("version");
-  const currentVersion = "1.1.13";
+  const currentVersion = "1.1.14";
   const isNewUpdateAvailable = currentVersion > storedVersion;
   if (isNewUpdateAvailable || !localStorage.getItem("version")) {
     localStorage.setItem("version", currentVersion);
