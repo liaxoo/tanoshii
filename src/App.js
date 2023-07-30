@@ -20,6 +20,7 @@ import Settings from "./pages/Settings";
 import About from "./pages/About";
 
 import { Error, SignIn, Update } from "./components/NotificationManager";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 function App() {
   const storedVersion = localStorage.getItem("version");
@@ -50,6 +51,7 @@ function App() {
         <Route path="/watch/:episode" element={<WatchAnime />} />
         <Route path="/id/:id" element={<MalAnimeDetails />} />
         <Route path="/play/:episode/:id/:number" element={<WatchAnimeV2 />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
       <Footer />
       <Toaster
