@@ -21,7 +21,8 @@ import { SignIn, Success, Error } from "../components/NotificationManager";
 import AnimeCards from "../components/Home/AnimeCards";
 function MalAnimeDetails() {
   const id = useParams().id;
-  const watching = false; const [loading, setLoading] = useState(true);
+  const watching = false;
+  const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const { width } = useWindowDimensions();
   const [anilistResponse, setAnilistResponse] = useState();
@@ -50,7 +51,7 @@ function MalAnimeDetails() {
         <Menu.Target>
           <div>
             <IconContext.Provider value={{ style: { padding: "17.5%" } }}>
-              <ButtonChange className="outline-favorite" onClick={() => { }}>
+              <ButtonChange className="outline-favorite" onClick={() => {}}>
                 <FiEdit color="white" size={"100%"} />
               </ButtonChange>
             </IconContext.Provider>
@@ -256,15 +257,16 @@ function MalAnimeDetails() {
       });
     await axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/episodes/${aniRes.data.data.Media.id}?provider=zoro`
+        `${process.env.REACT_APP_BACKEND_URL}/episodes/${aniRes.data.data.Media.id}?provider=gogoanime`
       )
       .catch((err) => {
         //setNotAvailable(true);
       })
       .then((data) => {
-        setEpisode(data.data)
-        checkForDub(data.data[0].id);
+        console.log(data.data[0]);
 
+        setEpisode(data.data);
+        checkForDub(data.data[0].id);
       });
 
     setMalResponse(malRes.data);
@@ -308,17 +310,16 @@ function MalAnimeDetails() {
                     Watch Sub
                   </Button>
                   {dub && (
-
                     <Button3
                       className="outline"
-                      to={`/play/${episode[0].id.slice(0, -3) + "dub"}/${id}/${1}`}
-                    //onClick={localStorage.setItem("dub", true)}
+                      to={`/play/${
+                        episode[0].id.slice(0, -3) + "dub"
+                      }/${id}/${1}`}
+                      //onClick={localStorage.setItem("dub", true)}
                     >
                       Watch Dub
                     </Button3>
-
                   )}
-
                 </Poster>
                 <div>
                   <h1>{anilistResponse.title.userPreferred}</h1>
@@ -394,7 +395,10 @@ function MalAnimeDetails() {
                         <input
                           type="checkbox"
                           id="switch"
-                          onChange={(e) => { setToggleDub(!toggleDub); localStorage.setItem("dub", toggleDub); }}
+                          onChange={(e) => {
+                            setToggleDub(!toggleDub);
+                            localStorage.setItem("dub", toggleDub);
+                          }}
                         ></input>
                         <span class="indicator"></span>
                         <span class="label">{dub ? "Dub" : "Sub"}</span>
@@ -404,7 +408,8 @@ function MalAnimeDetails() {
                 </DubContainer>
                 {width > 600 && (
                   <Episodes>
-                    {episode?.length > 0 && toggleDub &&
+                    {episode?.length > 0 &&
+                      toggleDub &&
                       episode?.map((epi, index) => {
                         return (
                           <EpisodeLink
@@ -415,12 +420,15 @@ function MalAnimeDetails() {
                           </EpisodeLink>
                         );
                       })}
-                    {episode?.length > 0 && !toggleDub &&
+                    {episode?.length > 0 &&
+                      !toggleDub &&
                       episode?.map((epi, index) => {
                         return (
                           <EpisodeLink
                             key={index}
-                            to={`/play/${epi.id.slice(0, -3) + "dub"}/${id}/${index + 1}`}
+                            to={`/play/${episode[index + 1]}/${id}/${
+                              index + 1
+                            }`}
                           >
                             Episode {index + 1}
                           </EpisodeLink>
@@ -438,7 +446,9 @@ function MalAnimeDetails() {
                         return (
                           <EpisodeLink
                             key={index}
-                            to={`/play/${epi.id}/${id}/${index + 1}`}
+                            to={`/play/${episode[index + 1]}/${id}/${
+                              index + 1
+                            }`}
                           >
                             {index + 1}
                           </EpisodeLink>
@@ -449,45 +459,47 @@ function MalAnimeDetails() {
               </Episode>
               <RecommendationsContainer>
                 <RecommendationsText>Recommendations</RecommendationsText>
-                {anilistResponse ? <AnimeCards episodes={anilistResponse.recommendations.edges} /> : <></>}
+                {anilistResponse ? (
+                  <AnimeCards
+                    episodes={anilistResponse.recommendations.edges}
+                  />
+                ) : (
+                  <></>
+                )}
               </RecommendationsContainer>
-
             </div>
           )}
-
         </Content>
-
       )}
-
     </div>
   );
 }
 
 const RecommendationsContainer = styled.div`
-    margin: 2rem;
-    font-size: 1rem;
-    color: #b5c3de;
-    span {
-      font-weight: 700;
-      color: white;
-    }
-    p {
-      font-weight: 300;
-      text-align: justify;
-    }
-    h1 {
-      font-weight: 700;
-      color: white;
-    }
-`
+  margin: 2rem;
+  font-size: 1rem;
+  color: #b5c3de;
+  span {
+    font-weight: 700;
+    color: white;
+  }
+  p {
+    font-weight: 300;
+    text-align: justify;
+  }
+  h1 {
+    font-weight: 700;
+    color: white;
+  }
+`;
 
 const RecommendationsText = styled.h1`
-      font-weight: 700;
-      color: white;
+  font-weight: 700;
+  color: white;
 
-        padding-bottom: 1rem;
-        padding-top: 1rem;
-`
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+`;
 
 const BannerContainer = styled.div`
   position: relative;
@@ -862,7 +874,7 @@ const Button = styled(Link)`
   }
 `;
 const Button3 = styled(Link)`
-position: relative;
+  position: relative;
   font-size: 1.2rem;
   padding: 1rem 3.4rem;
   text-align: center;
@@ -879,10 +891,9 @@ position: relative;
     display: block;
     width: 100%;
   }
-    @media screen and (min-width: 1200px) {
+  @media screen and (min-width: 1200px) {
     position: relative;
   }
 `;
-
 
 export default MalAnimeDetails;

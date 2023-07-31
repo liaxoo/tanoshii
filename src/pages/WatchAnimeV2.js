@@ -41,8 +41,7 @@ function WatchAnimeV2() {
     getEpisodeLinks();
   }, [episode]);
 
-  useEffect(() => {
-  }, [episodeLinks, subtitles]);
+  useEffect(() => {}, [episodeLinks, subtitles]);
 
   async function getDownloadLink() {
     toast.success("Finding download link...");
@@ -54,15 +53,15 @@ function WatchAnimeV2() {
       );
 
       let downloadLink = await axios.get(
-        `https://api.consumet.org/meta/anilist/watch/${episodeData.data.episodes[episode - 1].id}`
+        `https://apisssssssssssssss.consumet.org/meta/anilist/watch/${
+          episodeData.data.episodes[episode - 1].id
+        }`
       );
       toast.success("Redirecting!");
-      window.open(`${downloadLink.data.download}`)
+      window.open(`${downloadLink.data.download}`);
     } catch (err) {
       toast.error("Not available. ");
     }
-
-
   }
 
   async function getEpisodeLinks() {
@@ -71,10 +70,11 @@ function WatchAnimeV2() {
 
     try {
       let res = await axios.get(
-        `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${slug}`
+        `https://api.consumet.org/anime/gogoanime/watch/${slug}`
       );
       setSubtitles(res.data.subtitles);
       setEpisodeLinks(res.data.sources);
+      console.log(res.data.sources);
       setDownloadLink(res.data.download);
       setCurrentServer(res.data.gogoLink);
 
@@ -95,7 +95,10 @@ function WatchAnimeV2() {
           },
         },
       }).catch((err) => {
-        toast.error("There was an error attempting to locate the anime. Please refresh." + err);
+        toast.error(
+          "There was an error attempting to locate the anime. Please refresh." +
+            err
+        );
       });
       setAnimeDetails(aniRes.data.data.Media);
       ChangeAnimeEpisode({
@@ -105,11 +108,13 @@ function WatchAnimeV2() {
 
       await axios
         .get(
-          `${process.env.REACT_APP_BACKEND_URL}/episodes/${id}?provider=zoro`
+          `${process.env.REACT_APP_BACKEND_URL}/episodes/${id}?provider=gogoanime`
         )
         .catch((err) => {
-          toast.error("There was an error attempting to locate the anime. Please refresh." + err);
-
+          toast.error(
+            "There was an error attempting to locate the anime. Please refresh." +
+              err
+          );
         })
         .then((data) => {
           setEpisodes(data.data);
@@ -117,10 +122,11 @@ function WatchAnimeV2() {
 
       setLoading(false);
     } catch (error) {
-      toast.error("There was an error attempting to locate the anime. Please refresh." + error);
+      toast.error(
+        "There was an error attempting to locate the anime. Please refresh." +
+          error
+      );
     }
-
-
   }
 
   function fullScreenHandler(e) {
@@ -174,10 +180,13 @@ function WatchAnimeV2() {
               <div>
                 <Titles>
                   <p>
-                    <span>{`${animeDetails.title.english !== null
-                      ? animeDetails.title.english
-                      : animeDetails.title.userPreferred
-                      } ${localStorage.getItem("dub") === 'true' ? "(Dub)" : "(Sub)"}`}</span>
+                    <span>{`${
+                      animeDetails.title.english !== null
+                        ? animeDetails.title.english
+                        : animeDetails.title.userPreferred
+                    } ${
+                      localStorage.getItem("dub") === "true" ? "(Dub)" : "(Sub)"
+                    }`}</span>
                     {` Episode - ${episode}`}
                   </p>
                   {width <= 600 && (
@@ -246,7 +255,6 @@ function WatchAnimeV2() {
                   ) : (
                     <p>Loading...</p> // Or any other loading indicator
                   )}
-
                   <EpisodeButtons>
                     {width > 600 && (
                       <IconContext.Provider
@@ -260,22 +268,21 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={localStorage.getItem("dub") === "false" ? `/play/${episodes[parseInt(episode) - 1].id}/${id}/${parseInt(episode) - 1}` : `/play/${episodes[parseInt(episode) - 1].id.slice(0, -3) + "dub"}/${id}/${parseInt(episode) - 1}`}
+                          to={`/play/${
+                            episodes[parseInt(episode) - 1].id
+                          }/${id}/${parseInt(episode) - 1}`}
                           style={
-                            parseInt(episode) ===
-                              1
+                            parseInt(episode) === 1
                               ? {
-                                pointerEvents: "none",
-                                color: "rgba(255,255,255, 0.2)",
-                              }
+                                  pointerEvents: "none",
+                                  color: "rgba(255,255,255, 0.2)",
+                                }
                               : {}
                           }
                         >
                           <HiArrowSmLeft />
                           Previous
-
                         </EpisodeLinks>
-
                       </IconContext.Provider>
                     )}
                     {width > 600 && (
@@ -290,14 +297,16 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={localStorage.getItem("dub") === "true" ? `/play/${episodes[episode - 1].id.slice(0, -3) + "dub"}/${id}/${parseInt(episode) + 1}` : `/play/${episodes[episode - 1].id}/${id}/${parseInt(episode) + 1}`}
+                          to={`/play/${episodes[episode - 1].id}/${id}/${
+                            parseInt(episode) + 1
+                          }`}
                           style={
-                            parseInt(episode) === parseInt(animeDetails.episodes)
-
+                            parseInt(episode) ===
+                            parseInt(animeDetails.episodes)
                               ? {
-                                pointerEvents: "none",
-                                color: "rgba(255,255,255, 0.2)",
-                              }
+                                  pointerEvents: "none",
+                                  color: "rgba(255,255,255, 0.2)",
+                                }
                               : {}
                           }
                         >
@@ -308,25 +317,25 @@ function WatchAnimeV2() {
                     )}
                   </EpisodeButtons>
                 </div>
-                <EpisodesWrapper>
-                  <p>Episodes</p>
-                  <Episodes>
-                    {[...Array(parseInt(episodes.length))].map((x, i) => (
-                      <EpisodeLink
-                        to={`/play/${localStorage.getItem("dub") === "true" ? episodes[i].id.slice(0, -3) + "dub" : episodes[i].id}/${id}/${parseInt(i) + 1}`}
-                        style={
-                          i + 1 <= parseInt(episode)
-                            ? { backgroundColor: "#7676ff" }
-                            : {}
-                        }
-                      >
-                        {i + 1}
-                      </EpisodeLink>
-                    ))}
-
-                  </Episodes>
-                </EpisodesWrapper>
               </VideoPlayerWrapper>
+
+              <EpisodesWrapper>
+                <p>Episodes</p>
+                <Episodes>
+                  {[...Array(parseInt(episodes.length))].map((x, i) => (
+                    <EpisodeLink
+                      to={`/play/${episodes[i].id}/${id}/${parseInt(i) + 1}`}
+                      style={
+                        i + 1 <= parseInt(episode)
+                          ? { backgroundColor: "#7676ff" }
+                          : {}
+                      }
+                    >
+                      {i + 1}
+                    </EpisodeLink>
+                  ))}
+                </Episodes>
+              </EpisodesWrapper>
             </div>
           )}
         </Wrapper>
@@ -596,8 +605,7 @@ const Titles = styled.div`
 `;
 
 const Button = styled.button`
-  
-display: flex;
+  display: flex;
   justify-content: space-between;
   align-items: center;
   color: white;
@@ -607,15 +615,14 @@ display: flex;
     font-weight: 600;
   }
 
-  
-    font-weight: 400;
-    background-color: #242235;
-    border: 1px solid #393653;
-    text-decoration: none;
-    color: white;
-    padding: 0.7rem 1.1rem 0.7rem 1.5rem;
-    border-radius: 0.4rem;
-  
+  font-weight: 400;
+  background-color: #242235;
+  border: 1px solid #393653;
+  text-decoration: none;
+  color: white;
+  padding: 0.7rem 1.1rem 0.7rem 1.5rem;
+  border-radius: 0.4rem;
+
   @media screen and (max-width: 600px) {
     margin-bottom: 1rem;
     p {
@@ -627,6 +634,6 @@ display: flex;
       margin-left: 1rem;
     }
   }
-  `
+`;
 
 export default WatchAnimeV2;
