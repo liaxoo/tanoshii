@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
@@ -26,6 +26,7 @@ function WatchAnimeV2() {
   const slug = useParams().episode;
   const id = useParams().id;
   const episode = useParams().number;
+  const [subtitles, setSubtitles] = useState();
   const [episodeLinks, setEpisodeLinks] = useState();
   const [currentServer, setCurrentServer] = useState("");
   const [downloadLink, setDownloadLink] = useState();
@@ -34,25 +35,48 @@ function WatchAnimeV2() {
   const { width } = useWindowDimensions();
   const [fullScreen, setFullScreen] = useState(false);
   const [internalPlayer, setInternalPlayer] = useState(true);
+  const [episodes, setEpisodes] = useState();
+
   useEffect(() => {
     getEpisodeLinks();
   }, [episode]);
 
-  useEffect(() => {
-    console.log(episodeLinks);
-  }, [episodeLinks]);
+  useEffect(() => {}, [episodeLinks, subtitles]);
+
+  async function getDownloadLink() {
+    toast.success("Finding download link...");
+    //let modifiedSlug = episodeLink.slice(0, -3) + "sub";
+
+    try {
+      let episodeData = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/info/${id}`
+      );
+
+      let downloadLink = await axios.get(
+        `https://api.consumet.org/meta/anilist/watch/${
+          episodeData.data.episodes[episode - 1].id
+        }`
+      );
+      toast.success("Redirecting!");
+      window.open(`${downloadLink.data.download}`);
+    } catch (err) {
+      toast.error("Not available. ");
+    }
+  }
+
   async function getEpisodeLinks() {
     setLoading(true);
     window.scrollTo(0, 0);
 
     try {
       let res = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/watch/${slug}`
+        `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${slug}`
       );
-
+      setSubtitles(res.data.subtitles);
       setEpisodeLinks(res.data.sources);
       setDownloadLink(res.data.download);
       setCurrentServer(res.data.gogoLink);
+
       if (!res.data.sources) {
         setInternalPlayer(true);
       }
@@ -70,16 +94,37 @@ function WatchAnimeV2() {
           },
         },
       }).catch((err) => {
-        console.log(err);
+        toast.error(
+          "There was an error attempting to locate the anime. Please refresh." +
+            err
+        );
       });
       setAnimeDetails(aniRes.data.data.Media);
       ChangeAnimeEpisode({
         animeId: id,
         progress: episode,
       });
+
+      await axios
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/episodes/${id}?provider=zoro`
+        )
+        .catch((err) => {
+          toast.error(
+            "There was an error attempting to locate the anime. Please refresh." +
+              err
+          );
+        })
+        .then((data) => {
+          setEpisodes(data.data);
+        });
+
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      toast.error(
+        "There was an error attempting to locate the anime. Please refresh." +
+          error
+      );
     }
   }
 
@@ -138,7 +183,9 @@ function WatchAnimeV2() {
                       animeDetails.title.english !== null
                         ? animeDetails.title.english
                         : animeDetails.title.userPreferred
-                    } ${episodeLinks.isDub ? "(Dub)" : "(Sub)"}`}</span>
+                    } ${
+                      localStorage.getItem("dub") === "true" ? "(Dub)" : "(Sub)"
+                    }`}</span>
                     {` Episode - ${episode}`}
                   </p>
                   {width <= 600 && (
@@ -150,13 +197,13 @@ function WatchAnimeV2() {
                         },
                       }}
                     >
-                      <a
-                        href={downloadLink}
+                      <Button
+                        onClick={getDownloadLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <BiArrowToBottom />
-                      </a>
+                      </Button>
                     </IconContext.Provider>
                   )}
                   {width > 600 && (
@@ -170,14 +217,14 @@ function WatchAnimeV2() {
                         },
                       }}
                     >
-                      <a
-                        href={downloadLink}
+                      <Button
+                        onClick={getDownloadLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Download
                         <BiArrowToBottom />
-                      </a>
+                      </Button>
                     </IconContext.Provider>
                   )}
                 </Titles>
@@ -196,10 +243,13 @@ function WatchAnimeV2() {
                 <div>
                   {episodeLinks && episodeLinks.length > 0 ? (
                     <VideoPlayer
-                      sources={episodeLinks[3].url}
+                      sources={"https://cors.zimjs.com/" + episodeLinks[0].url}
                       type={"m3u8"}
                       title={`${animeDetails.title}EP${episode}`}
                       downloadLink={downloadLink}
+                      subtitlesArray={subtitles}
+                      totalEpisodes={episodeLinks.totalEpisodes}
+                      currentEpisode={episode}
                     />
                   ) : (
                     <p>Loading...</p> // Or any other loading indicator
@@ -216,25 +266,7 @@ function WatchAnimeV2() {
                             marginRight: "0.3rem",
                           },
                         }}
-                      >
-                        <EpisodeLinks
-                          to={`/play/${
-                            slug.substring(0, slug.lastIndexOf("-episode-")) +
-                            `-episode-${parseInt(episode) - 1}`
-                          }/${id}/${parseInt(episode) - 1}`}
-                          style={
-                            parseInt(episode) === 1
-                              ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                              : {}
-                          }
-                        >
-                          <HiArrowSmLeft />
-                          Previous
-                        </EpisodeLinks>
-                      </IconContext.Provider>
+                      ></IconContext.Provider>
                     )}
                     {width > 600 && (
                       <IconContext.Provider
@@ -248,13 +280,53 @@ function WatchAnimeV2() {
                         }}
                       >
                         <EpisodeLinks
-                          to={`/play/${
-                            slug.substring(0, slug.lastIndexOf("-episode-")) +
-                            `-episode-${parseInt(episode) + 1}`
-                          }/${id}/${parseInt(episode) + 1}`}
+                          to={
+                            localStorage.getItem("dub") === "true" &&
+                            parseInt(episode) !== 1
+                              ? `/play/${
+                                  episodes[
+                                    episodes.length + 1 - parseInt(episode)
+                                  ].id.slice(0, -3) + "dub"
+                                }/${id}/${parseInt(episode) - 1}`
+                              : parseInt(episode) !== 1 &&
+                                `/play/${
+                                  episodes[
+                                    episodes.length + 1 - parseInt(episode)
+                                  ].id
+                                }/${id}/${parseInt(episode) - 1}`
+                          }
+                          style={
+                            parseInt(episode) === 1
+                              ? {
+                                  pointerEvents: "none",
+                                  color: "rgba(255,255,255, 0.2)",
+                                }
+                              : {}
+                          }
+                        >
+                          <HiArrowSmLeft />
+                          Previous
+                        </EpisodeLinks>
+
+                        <EpisodeLinks
+                          to={
+                            localStorage.getItem("dub") === "true" &&
+                            parseInt(episode) !== episodes.length
+                              ? `/play/${
+                                  episodes[
+                                    episodes.length - 1 - parseInt(episode)
+                                  ].id.slice(0, -3) + "dub"
+                                }/${id}/${parseInt(episode) + 1}`
+                              : parseInt(episode) !== episodes.length &&
+                                `/play/${
+                                  episodes[
+                                    episodes.length - 1 - parseInt(episode)
+                                  ].id
+                                }/${id}/${parseInt(episode) + 1}`
+                          }
                           style={
                             parseInt(episode) ===
-                            parseInt(episodeLinks.totalEpisodes)
+                            parseInt(animeDetails.episodes)
                               ? {
                                   pointerEvents: "none",
                                   color: "rgba(255,255,255, 0.2)",
@@ -272,12 +344,16 @@ function WatchAnimeV2() {
                 <EpisodesWrapper>
                   <p>Episodes</p>
                   <Episodes>
-                    {[...Array(parseInt(animeDetails.episodes))].map((x, i) => (
+                    {[...Array(parseInt(episodes.length))].map((x, i) => (
                       <EpisodeLink
                         to={`/play/${
-                          slug.substring(0, slug.lastIndexOf("-episode-")) +
-                          `-episode-${parseInt(i) + 1}`
-                        }/${id}/${parseInt(i) + 1}`}
+                          localStorage.getItem("dub") === "true"
+                            ? episodes[episodes.length - 1 - i].id.slice(
+                                0,
+                                -3
+                              ) + "dub"
+                            : episodes[episodes.length - 1 - i].id
+                        }/${id}/${i + 1}`}
                         style={
                           i + 1 <= parseInt(episode)
                             ? { backgroundColor: "#7676ff" }
@@ -545,6 +621,38 @@ const Titles = styled.div`
     padding: 0.7rem 1.1rem 0.7rem 1.5rem;
     border-radius: 0.4rem;
   }
+  @media screen and (max-width: 600px) {
+    margin-bottom: 1rem;
+    p {
+      font-size: 1.3rem;
+    }
+    a {
+      padding: 0.7rem;
+      border-radius: 50%;
+      margin-left: 1rem;
+    }
+  }
+`;
+
+const Button = styled.button`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  margin-bottom: 0.5rem;
+
+  span {
+    font-weight: 600;
+  }
+
+  font-weight: 400;
+  background-color: #242235;
+  border: 1px solid #393653;
+  text-decoration: none;
+  color: white;
+  padding: 0.7rem 1.1rem 0.7rem 1.5rem;
+  border-radius: 0.4rem;
+
   @media screen and (max-width: 600px) {
     margin-bottom: 1rem;
     p {

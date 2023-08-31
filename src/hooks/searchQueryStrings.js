@@ -167,11 +167,28 @@ export let searchByIdQuery = `
 				day
 			}
       episodes
+	  
 			averageScore
 			bannerImage
 			coverImage {
 				extraLarge
 				large
+			}
+			recommendations(sort: RATING_DESC) {
+				edges {
+					node {
+						mediaRecommendation {
+							title {
+								english
+								romaji
+							}
+							id
+							coverImage {
+								large
+							}
+						}
+					}
+				}
 			}
 		}
 	}

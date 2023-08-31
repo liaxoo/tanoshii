@@ -30,6 +30,7 @@ function Footer() {
           This site does not store any files on our server, it only links to
           media hosted by 3rd party services.
         </p>
+        <a href="https://forms.gle/AauZGT3yQ1q5nui18">DMCA Takedown Request</a>
         <h4>Version: {localStorage.getItem("version")}</h4>
       </TextContainer>
     </FootBar>
@@ -45,8 +46,8 @@ const FootBar = styled.section`
   text-align: center;
   width: 100%;
   background: ${COLORS.colorPopup};
-  top: 90%;
-  position: relative;
+  margin-top: 7.5%;
+  position: absolute;
 `;
 
 const Shadow = styled.div`

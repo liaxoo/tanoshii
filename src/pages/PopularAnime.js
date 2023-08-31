@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 import SearchResultsSkeleton from "../components/skeletons/SearchResultsSkeleton";
 import { PopularAnimeQuery } from "../hooks/searchQueryStrings";
+import toast from "react-hot-toast";
 
 function PopularAnime() {
   let page = useParams().page;
@@ -32,10 +33,9 @@ function PopularAnime() {
         },
       },
     }).catch((err) => {
-      console.log(err);
+      toast.error("Failed to load anime. " + err)
     });
     setLoading(false);
-    console.log(res.data.data.Page.media);
     setAnimeDetails(res.data.data.Page.media);
     document.title = "Popular Anime - Tanoshii";
   }

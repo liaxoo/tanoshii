@@ -7,7 +7,7 @@ import useWindowDimensions from "../hooks/useWindowDimensions";
 import { searchByIdQuery } from "../hooks/searchQueryStrings";
 import { IconContext } from "react-icons";
 import { Menu, Text } from "@mantine/core";
-
+import toast from "react-hot-toast";
 import { FiHeart, FiEdit } from "react-icons/fi";
 import {
   MalToAniList,
@@ -18,19 +18,33 @@ import {
 } from "../components/Home/AnimeFunctions";
 import { COLORS } from "../styles/colors";
 import { SignIn, Success, Error } from "../components/NotificationManager";
+import AnimeCards from "../components/Home/AnimeCards";
 function MalAnimeDetails() {
   const id = useParams().id;
   const watching = false;
-
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const { width } = useWindowDimensions();
   const [anilistResponse, setAnilistResponse] = useState();
   const [malResponse, setMalResponse] = useState();
   const [expanded, setExpanded] = useState(false);
+
   const [dub, setDub] = useState(false);
+  const [toggleDub, setToggleDub] = useState(true);
+
   const [notAvailable, setNotAvailable] = useState(false);
   const [episode, setEpisode] = useState(null);
+  async function checkForDub(episodess) {
+    let modifiedSlug = episodess.slice(0, -3) + "dub";
+    try {
+      await axios.get(
+        `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${modifiedSlug}`
+      );
+      setDub(true);
+    } catch (err) {
+      console.log(err);
+    }
+  }
   function ChangeStatus() {
     return (
       <Menu shadow="md" width={200}>
@@ -200,6 +214,8 @@ function MalAnimeDetails() {
     } else Error({ text: "You must be logged in to use this feature." });
   }
   async function getInfo() {
+    localStorage.setItem("dub", false);
+
     window.scrollTo(0, 0);
     if (id === "null") {
       setNotAvailable(true);
@@ -228,7 +244,6 @@ function MalAnimeDetails() {
         console.log("Error:", error.message);
       }
     });
-
     let watchRes = null;
 
     setAnilistResponse(aniRes.data.data.Media);
@@ -242,15 +257,16 @@ function MalAnimeDetails() {
       });
     await axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/info/${aniRes.data.data.Media.id}?provider=gogoanime`
+        `${process.env.REACT_APP_BACKEND_URL}/episodes/${aniRes.data.data.Media.id}?provider=zoro`
       )
       .catch((err) => {
         //setNotAvailable(true);
-        Error({ text: err });
       })
       .then((data) => {
-        setEpisode(data.data.episodes);
+        setEpisode(data.data);
+        checkForDub(data.data[0].id);
       });
+
     setMalResponse(malRes.data);
     setLoading(false);
   }
@@ -288,17 +304,6 @@ function MalAnimeDetails() {
               <ContentWrapper>
                 <Poster>
                   <img src={anilistResponse.coverImage.extraLarge} alt="" />
-                  <Button to={`/play/${malResponse.subLink}/1`}>
-                    Watch Sub
-                  </Button>
-                  {malResponse.isDub && (
-                    <Button
-                      className="outline"
-                      to={`/play/${malResponse.dubLink}/1`}
-                    >
-                      Watch Dub
-                    </Button>
-                  )}
                 </Poster>
                 <div>
                   <h1>{anilistResponse.title.userPreferred}</h1>
@@ -368,13 +373,16 @@ function MalAnimeDetails() {
               <Episode>
                 <DubContainer>
                   <h2>Episodes</h2>
-                  {malResponse.isDub && (
+                  {dub && (
                     <div class="switch">
                       <label for="switch">
                         <input
                           type="checkbox"
                           id="switch"
-                          onChange={(e) => setDub(!dub)}
+                          onChange={(e) => {
+                            setToggleDub(!toggleDub);
+                            localStorage.setItem("dub", toggleDub);
+                          }}
                         ></input>
                         <span class="indicator"></span>
                         <span class="label">{dub ? "Dub" : "Sub"}</span>
@@ -385,16 +393,38 @@ function MalAnimeDetails() {
                 {width > 600 && (
                   <Episodes>
                     {episode?.length > 0 &&
+                      toggleDub &&
                       episode?.map((epi, index) => {
+                        const displayedIndex = index + 1;
+                        const reversedIndex = episode.length - index;
                         return (
                           <EpisodeLink
                             key={index}
-                            to={`/play/${epi.id}/${id}/${index + 1}`}
+                            to={`/play/${
+                              episode[reversedIndex - 1].id
+                            }/${id}/${displayedIndex}`}
                           >
-                            Episode {index + 1}
+                            Episode {displayedIndex}
                           </EpisodeLink>
                         );
                       })}
+                    {episode?.length > 0 &&
+                      !toggleDub &&
+                      episode?.map((epi, index) => {
+                        const displayedIndex = index + 1;
+                        const reversedIndex = episode.length - index;
+                        return (
+                          <EpisodeLink
+                            key={index}
+                            to={`/play/${
+                              episode[reversedIndex - 1].id.slice(0, -3) + "dub"
+                            }/${id}/${displayedIndex}`}
+                          >
+                            Episode {displayedIndex}
+                          </EpisodeLink>
+                        );
+                      })}
+
                     {episode?.length === 0 && (
                       <div>Sorry, no episodes found.</div>
                     )}
@@ -404,18 +434,32 @@ function MalAnimeDetails() {
                   <Episodes>
                     {episode?.length > 0 &&
                       episode?.map((epi, index) => {
+                        const displayedIndex = index + 1;
+                        const reversedIndex = episode.length - index;
                         return (
                           <EpisodeLink
                             key={index}
-                            to={`/play/${epi.id}/${id}/${index + 1}`}
+                            to={`/play/${
+                              episode[reversedIndex - 1].id
+                            }/${id}/${displayedIndex}`}
                           >
-                            {index + 1}
+                            {displayedIndex}
                           </EpisodeLink>
                         );
                       })}
                   </Episodes>
                 )}
               </Episode>
+              <RecommendationsContainer>
+                <RecommendationsText>Recommendations</RecommendationsText>
+                {anilistResponse ? (
+                  <AnimeCards
+                    episodes={anilistResponse.recommendations.edges}
+                  />
+                ) : (
+                  <></>
+                )}
+              </RecommendationsContainer>
             </div>
           )}
         </Content>
@@ -423,6 +467,32 @@ function MalAnimeDetails() {
     </div>
   );
 }
+
+const RecommendationsContainer = styled.div`
+  margin: 2rem;
+  font-size: 1rem;
+  color: #b5c3de;
+  span {
+    font-weight: 700;
+    color: white;
+  }
+  p {
+    font-weight: 300;
+    text-align: justify;
+  }
+  h1 {
+    font-weight: 700;
+    color: white;
+  }
+`;
+
+const RecommendationsText = styled.h1`
+  font-weight: 700;
+  color: white;
+
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+`;
 
 const BannerContainer = styled.div`
   position: relative;
@@ -794,6 +864,28 @@ const Button = styled(Link)`
   @media screen and (max-width: 600px) {
     display: block;
     width: 100%;
+  }
+`;
+const Button3 = styled(Link)`
+  position: relative;
+  font-size: 1.2rem;
+  padding: 1rem 3.4rem;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  background-color: #7676ff;
+  font-weight: 700;
+  border-radius: 0.4rem;
+  position: relative;
+  top: -25%;
+  white-space: nowrap;
+
+  @media screen and (max-width: 600px) {
+    display: block;
+    width: 100%;
+  }
+  @media screen and (min-width: 1200px) {
+    position: relative;
   }
 `;
 

@@ -18,12 +18,12 @@ import Success from "./pages/Success";
 import Footer from "./components/Navigation/Footer";
 import Settings from "./pages/Settings";
 import About from "./pages/About";
-
+import Banner from "./components/Banner";
 import { Error, SignIn, Update } from "./components/NotificationManager";
 
 function App() {
   const storedVersion = localStorage.getItem("version");
-  const currentVersion = "1.0.0";
+  const currentVersion = "1.1.15";
   const isNewUpdateAvailable = currentVersion > storedVersion;
   if (isNewUpdateAvailable || !localStorage.getItem("version")) {
     localStorage.setItem("version", currentVersion);
@@ -33,6 +33,8 @@ function App() {
   return (
     <Router>
       <GlobalStyle />
+      <Banner />
+
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -51,6 +53,7 @@ function App() {
         <Route path="/id/:id" element={<MalAnimeDetails />} />
         <Route path="/play/:episode/:id/:number" element={<WatchAnimeV2 />} />
       </Routes>
+
       <Footer />
       <Toaster
         toastOptions={{

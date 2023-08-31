@@ -58,7 +58,8 @@ function About() {
           DMCA Takedown Requests seriously, and have made a form to submit
           requests. Any response will be emailed within 48 business hours of the
           form completion. We cannot guarantee any takedown requests. You can
-          locate the form <a href="">here.</a>
+          locate the form{" "}
+          <a href="https://forms.gle/AauZGT3yQ1q5nui18">here.</a>
         </Text>
       </HomeDiv>
     </div>
