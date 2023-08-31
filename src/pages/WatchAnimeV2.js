@@ -41,6 +41,7 @@ function WatchAnimeV2() {
     getEpisodeLinks();
   }, [episode]);
 
+<<<<<<< HEAD
   useEffect(() => {}, [episodeLinks, subtitles]);
 
   async function getDownloadLink() {
@@ -64,6 +65,10 @@ function WatchAnimeV2() {
     }
   }
 
+=======
+  useEffect(() => {
+  }, [episodeLinks, subtitles]);
+>>>>>>> parent of 91611c1 (v1.1.14)
   async function getEpisodeLinks() {
     setLoading(true);
     window.scrollTo(0, 0);
@@ -198,13 +203,13 @@ function WatchAnimeV2() {
                         },
                       }}
                     >
-                      <Button
-                        onClick={getDownloadLink}
+                      <a
+                        href={downloadLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <BiArrowToBottom />
-                      </Button>
+                      </a>
                     </IconContext.Provider>
                   )}
                   {width > 600 && (
@@ -218,14 +223,14 @@ function WatchAnimeV2() {
                         },
                       }}
                     >
-                      <Button
-                        onClick={getDownloadLink}
+                      <a
+                        href={downloadLink}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         Download
                         <BiArrowToBottom />
-                      </Button>
+                      </a>
                     </IconContext.Provider>
                   )}
                 </Titles>
@@ -604,6 +609,7 @@ const Titles = styled.div`
   }
 `;
 
+<<<<<<< HEAD
 const Button = styled.button`
   display: flex;
   justify-content: space-between;
@@ -636,4 +642,6 @@ const Button = styled.button`
   }
 `;
 
+=======
+>>>>>>> parent of 91611c1 (v1.1.14)
 export default WatchAnimeV2;
