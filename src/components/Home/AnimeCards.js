@@ -168,6 +168,7 @@ function AnimeCards(props) {
           modules={[Scrollbar]}
           className="mySwiper"
         >
+<<<<<<< HEAD
           {recommendations
             ? data.map((item, i) => (
                 <SwiperSlide>
@@ -214,6 +215,43 @@ function AnimeCards(props) {
                             ? item.title.english.substring(0, CLIPSIZE) + "..."
                             : item.title.english
                           : item.title.romaji.length > CLIPSIZE
+=======
+          {recommendations ? data.map((item, i) => (
+            <SwiperSlide>
+              <Wrapper>
+                <a href={`id/${item.node.mediaRecommendation.id}`}>
+                  <img src={item.node.mediaRecommendation.coverImage.large} alt="" />
+                </a>
+                <p>
+                  {item.node.mediaRecommendation.english !== null
+                    ? item.node.mediaRecommendation.title.english.length > CLIPSIZE
+                      ? item.node.mediaRecommendation.title.english.substring(0, CLIPSIZE) +
+                      "..."
+                      : item.node.mediaRecommendation.title.english
+                    : item.node.mediaRecommendation.title.romaji.length > CLIPSIZE
+                      ? item.node.mediaRecommendation.title.romaji.substring(0, CLIPSIZE) + "..."
+                      : item.node.mediaRecommendation.title.romaji}
+
+                </p>
+              </Wrapper>
+            </SwiperSlide>
+          )) : (
+            data.map((item, i) => (
+              <SwiperSlide>
+                <Wrapper>
+                  <Link to={`id/` + item.id}>
+                    <img src={item.coverImage.large} alt="" />
+                  </Link>
+
+                  {width <= 600 ? (
+                    <p>
+                      {item.title.english !== null
+                        ? item.title.english.length > CLIPSIZE
+                          ? item.title.english.substring(0, CLIPSIZE) +
+                          "..."
+                          : item.title.english
+                        : item.title.romaji.length > CLIPSIZE
+>>>>>>> parent of 699627e (bug fix)
                           ? item.title.romaji.substring(0, CLIPSIZE) + "..."
                           : item.title.romaji}
                       </p>
