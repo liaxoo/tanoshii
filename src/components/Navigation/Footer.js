@@ -30,6 +30,7 @@ function Footer() {
           This site does not store any files on our server, it only links to
           media hosted by 3rd party services.
         </p>
+        <a href="https://forms.gle/AauZGT3yQ1q5nui18">DMCA Takedown Request</a>
         <h4>Version: {localStorage.getItem("version")}</h4>
       </TextContainer>
     </FootBar>

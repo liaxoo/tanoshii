@@ -168,71 +168,30 @@ function AnimeCards(props) {
           modules={[Scrollbar]}
           className="mySwiper"
         >
-<<<<<<< HEAD
-          {recommendations
-            ? data.map((item, i) => (
-                <SwiperSlide>
-                  <Wrapper>
-                    <div>
-                      <a href={`id/${item.node.mediaRecommendation.id}`}>
-                        <img
-                          src={item.node.mediaRecommendation.coverImage.large}
-                          alt=""
-                        />
-                      </a>
-                      <p>
-                        {item.node.mediaRecommendation.title.english !== null
-                          ? item.node.mediaRecommendation.title.english.length >
-                            CLIPSIZE
-                            ? item.node.mediaRecommendation.title.english.substring(
-                                0,
-                                CLIPSIZE
-                              ) + "..."
-                            : item.node.mediaRecommendation.title.english
-                          : item.node.mediaRecommendation.title.romaji.length >
-                            CLIPSIZE
-                          ? item.node.mediaRecommendation.title.romaji.substring(
-                              0,
-                              CLIPSIZE
-                            ) + "..."
-                          : item.node.mediaRecommendation.title.romaji}
-                      </p>
-                    </div>
-                  </Wrapper>
-                </SwiperSlide>
-              ))
-            : data.map((item, i) => (
-                <SwiperSlide>
-                  <Wrapper>
-                    <Link to={`id/` + item.id}>
-                      <img src={item.coverImage.large} alt="" />
-                    </Link>
-
-                    {width <= 600 ? (
-                      <p>
-                        {item.title.english !== null
-                          ? item.title.english.length > CLIPSIZE
-                            ? item.title.english.substring(0, CLIPSIZE) + "..."
-                            : item.title.english
-                          : item.title.romaji.length > CLIPSIZE
-=======
           {recommendations ? data.map((item, i) => (
             <SwiperSlide>
               <Wrapper>
-                <a href={`id/${item.node.mediaRecommendation.id}`}>
-                  <img src={item.node.mediaRecommendation.coverImage.large} alt="" />
-                </a>
-                <p>
-                  {item.node.mediaRecommendation.english !== null
-                    ? item.node.mediaRecommendation.title.english.length > CLIPSIZE
-                      ? item.node.mediaRecommendation.title.english.substring(0, CLIPSIZE) +
-                      "..."
-                      : item.node.mediaRecommendation.title.english
-                    : item.node.mediaRecommendation.title.romaji.length > CLIPSIZE
-                      ? item.node.mediaRecommendation.title.romaji.substring(0, CLIPSIZE) + "..."
-                      : item.node.mediaRecommendation.title.romaji}
+                <div>
 
-                </p>
+
+
+
+                  <a href={`id/${item.node.mediaRecommendation.id}`}>
+                    <img src={item.node.mediaRecommendation.coverImage.large} alt="" />
+                  </a>
+                  <p>
+                    {item.node.mediaRecommendation.title.english !== null
+                      ? item.node.mediaRecommendation.title.english.length > CLIPSIZE
+                        ? item.node.mediaRecommendation.title.english.substring(0, CLIPSIZE) +
+                        "..."
+                        : item.node.mediaRecommendation.title.english
+                      : item.node.mediaRecommendation.title.romaji.length > CLIPSIZE
+                        ? item.node.mediaRecommendation.title.romaji.substring(0, CLIPSIZE) + "..."
+                        : item.node.mediaRecommendation.title.romaji}
+
+                  </p>
+                </div>
+
               </Wrapper>
             </SwiperSlide>
           )) : (
@@ -251,55 +210,59 @@ function AnimeCards(props) {
                           "..."
                           : item.title.english
                         : item.title.romaji.length > CLIPSIZE
->>>>>>> parent of 699627e (bug fix)
                           ? item.title.romaji.substring(0, CLIPSIZE) + "..."
                           : item.title.romaji}
-                      </p>
-                    ) : (
-                      <p>
-                        {item.title.english !== null
-                          ? item.title.english.length > CLIPSIZE + 20
-                            ? item.title.english.substring(0, CLIPSIZE + 50) +
-                              "..."
-                            : item.title.english
-                          : item.title.romaji.length > CLIPSIZE + 20
-                          ? item.title.romaji.substring(0, CLIPSIZE + 20) +
-                            "..."
+                    </p>
+                  ) : (
+                    <p>
+                      {item.title.english !== null
+                        ? item.title.english.length > CLIPSIZE + 20
+                          ? item.title.english.substring(0, CLIPSIZE + 50) +
+                          "..."
+                          : item.title.english
+                        : item.title.romaji.length > CLIPSIZE + 20
+                          ? item.title.romaji.substring(0, CLIPSIZE + 20) + "..."
                           : item.title.romaji}
-                      </p>
-                    )}
-                  </Wrapper>
-                </SwiperSlide>
-              ))}
+                    </p>
+                  )}
+
+
+                </Wrapper>
+              </SwiperSlide>
+            ))
+          )}
+
         </Swiper>
       )}
     </div>
   );
 }
 
+
+
 const Wrapper = styled.div`
   position: relative;
   border-radius: 0.5rem;
-  img {
-    width: 160px;
-    height: 235px;
-    border-radius: 0.5rem;
-    margin-bottom: 0.3rem;
-    object-fit: cover;
-    @media screen and (max-width: 600px) {
-      width: 120px;
-      height: 180px;
-    }
-    @media screen and (max-width: 400px) {
-      width: 100px;
-      height: 160px;
-    }
-  }
+img {
+width: 160px;
+height: 235px;
+border-radius: 0.5rem;
+margin-bottom: 0.3rem;
+object-fit: cover;
+@media screen and (max-width: 600px) {
+width: 120px;
+height: 180px;
+}
+@media screen and (max-width: 400px) {
+width: 100px;
+height: 160px;
+}
+}
 
-  p {
-    color: white;
-    font-size: 1rem;
-    font-weight: 400;
-  }
+p {
+color: white;
+font-size: 1rem;
+font-weight: 400;
+}
 `;
 export default AnimeCards;

@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import { BiArrowToBottom, BiFullscreen } from "react-icons/bi";
 import { HiOutlineSwitchHorizontal } from "react-icons/hi";
 import { BsSkipEnd, BsFillBadgeCcFill } from "react-icons/bs";
@@ -25,16 +19,9 @@ import "plyr/dist/plyr.css";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-const VideoPlayer = ({
-  sources,
-  type,
-  title,
-  subtitlesArray,
-  totalEpisodes,
-  currentEpisode,
-  internalPlayer,
-  setInternalPlayer,
-}) => {
+const VideoPlayer = ({ sources, type, title, subtitlesArray, totalEpisodes,
+  currentEpisode, internalPlayer,
+  setInternalPlayer, }) => {
   const videoRef = useRef();
   const { width } = useWindowDimensions();
   const navigate = useNavigate();
@@ -43,7 +30,7 @@ const VideoPlayer = ({
   const episode = useParams().episode;
   const id = useParams().id;
   const number = useParams().number;
-  const [selectedQuality, setSelectedQuality] = useState("auto");
+  const [selectedQuality, setSelectedQuality] = useState('auto');
   let src = sources;
   const [player, setPlayer] = useState(null);
   const [autoPlay, setAutoplay] = useState(false);
@@ -53,9 +40,8 @@ const VideoPlayer = ({
       : false
   );
   const isDub = localStorage.getItem("dub") === "true";
-  const opacityValue = isDub ? "25%" : "100%";
+  const opacityValue = isDub ? '25%' : '100%';
   // Language code mapping
-  /*
   const languageCodes = useMemo(() => {
     return subtitlesArray.reduce((acc, subtitle) => {
       const languageCode = subtitle.lang.slice(0, 2).toLowerCase();
@@ -63,7 +49,7 @@ const VideoPlayer = ({
       return acc;
     }, {});
   }, [subtitlesArray]);
-*/
+
   function updateAutoplay(data) {
     toast.success(`Autoplay ${data ? "Enabled" : "Disabled"}`, {
       position: "top-center",
@@ -94,7 +80,8 @@ const VideoPlayer = ({
       } catch (err) {
         toast.error("Sub not available.");
       }
-    } else {
+    }
+    else {
       toast.success("Finding dub episode...");
       let modifiedSlug = episodeLink.slice(0, -3) + "dub";
 
@@ -109,6 +96,7 @@ const VideoPlayer = ({
         toast.error("Dub not available.");
       }
     }
+
   }
   function skipIntro() {
     player.forward(85);
@@ -117,34 +105,34 @@ const VideoPlayer = ({
   useEffect(() => {
     let flag = true;
     const defaultOptions = {
-      captions: { active: true, language: "English", update: false },
-      settings: ["captions", "quality", "speed"],
+      captions: { active: true, language: 'English', update: false },
+      settings: ['captions', 'quality'],
       controls:
         width > 600
           ? [
-              "play-large",
-              "rewind",
-              "play",
-              "fast-forward",
-              "progress",
-              "current-time",
-              "duration",
-              "mute",
-              "volume",
-              "settings",
-              "fullscreen",
-            ]
+            "play-large",
+            "rewind",
+            "play",
+            "fast-forward",
+            "progress",
+            "current-time",
+            "duration",
+            "mute",
+            "volume",
+            "settings",
+            "fullscreen",
+          ]
           : [
-              "play-large",
-              "rewind",
-              "play",
-              "fast-forward",
-              "progress",
-              "current-time",
-              "duration",
-              "settings",
-              "fullscreen",
-            ],
+            "play-large",
+            "rewind",
+            "play",
+            "fast-forward",
+            "progress",
+            "current-time",
+            "duration",
+            "settings",
+            "fullscreen",
+          ],
     };
     if (!localStorage.getItem("autoplay")) {
       localStorage.setItem("autoplay", false);
@@ -183,6 +171,7 @@ const VideoPlayer = ({
           localStorage.setItem(title, Math.round(player.currentTime));
         }
       });
+
       player.on("ended", function () {
         localStorage.removeItem(title);
 
@@ -207,19 +196,22 @@ const VideoPlayer = ({
       player.on("seeking", (event) => {
         localStorage.setItem(title, Math.round(player.currentTime));
       });
-    } else if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
+
+    } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
       // Fallback for browsers that don't support HLS.js
       videoRef.current.src = sources;
     }
+
+
 
     // Add subtitles tracks
     if (subtitlesArray && subtitlesArray.length > 0) {
       subtitlesArray.forEach((subtitles, index) => {
         if (subtitles.url && subtitles.lang) {
-          const track = document.createElement("track");
-          track.kind = "captions";
+          const track = document.createElement('track');
+          track.kind = 'captions';
           track.label = subtitles.lang;
-          //track.srclang = languageCodes[subtitles.lang] || "en"; // Use the language code from the mapping or fallback to 'en'
+          track.srclang = languageCodes[subtitles.lang] || 'en'; // Use the language code from the mapping or fallback to 'en'
           track.src = subtitles.url;
           track.default = index === 0; // Set the first track as default
           videoRef.current.appendChild(track);
@@ -251,9 +243,9 @@ const VideoPlayer = ({
       // You can do some additional logic here if needed
     }, 250);
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -341,6 +333,7 @@ const VideoPlayer = ({
         <source src={sources} type={`application/x-mpegURL`} />
       </video>
     </div>
+
   );
 };
 

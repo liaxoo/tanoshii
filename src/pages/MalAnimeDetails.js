@@ -257,33 +257,15 @@ function MalAnimeDetails() {
       });
     await axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/episodes/${aniRes.data.data.Media.id}?provider=gogoanime`
+        `${process.env.REACT_APP_BACKEND_URL}/episodes/${aniRes.data.data.Media.id}?provider=zoro`
       )
       .catch((err) => {
         //setNotAvailable(true);
       })
       .then((data) => {
-        console.log(data.data[0]);
-
         setEpisode(data.data);
         checkForDub(data.data[0].id);
       });
-
-
-    /*
-        await episode
-    let modifiedSlug = episode[0].id.slice(0, -3) + "dub";
-    try {
-      await axios.get(
-        `https://tanoshii-backend.vercel.app/anime/zoro/watch?episodeId=${modifiedSlug}`
-      );
-      setDub(true);
-    } catch (err) {
-      console.log(err)
-    }
-    */
-
-
 
     setMalResponse(malRes.data);
     setLoading(false);
@@ -322,20 +304,6 @@ function MalAnimeDetails() {
               <ContentWrapper>
                 <Poster>
                   <img src={anilistResponse.coverImage.extraLarge} alt="" />
-                  <Button to={`/play/${episode[0].id}/${id}/${1}`}>
-                    Watch Sub
-                  </Button>
-                  {dub && (
-                    <Button3
-                      className="outline"
-                      to={`/play/${
-                        episode[0].id.slice(0, -3) + "dub"
-                      }/${id}/${1}`}
-                      //onClick={localStorage.setItem("dub", true)}
-                    >
-                      Watch Dub
-                    </Button3>
-                  )}
                 </Poster>
                 <div>
                   <h1>{anilistResponse.title.userPreferred}</h1>
@@ -442,7 +410,7 @@ function MalAnimeDetails() {
                         return (
                           <EpisodeLink
                             key={index}
-                            to={`/play/${episode[index + 1]}/${id}/${
+                            to={`/play/${epi.id.slice(0, -3) + "dub"}/${id}/${
                               index + 1
                             }`}
                           >
@@ -462,9 +430,7 @@ function MalAnimeDetails() {
                         return (
                           <EpisodeLink
                             key={index}
-                            to={`/play/${episode[index + 1]}/${id}/${
-                              index + 1
-                            }`}
+                            to={`/play/${epi.id}/${id}/${index + 1}`}
                           >
                             {index + 1}
                           </EpisodeLink>
