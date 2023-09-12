@@ -393,28 +393,18 @@ function MalAnimeDetails() {
                 {width > 600 && (
                   <Episodes>
                     {episode?.length > 0 &&
-                      toggleDub &&
-                      episode?.map((epi, index) => {
+                      (toggleDub
+                        ? [...episode].sort((a, b) => a.number - b.number)
+                        : [...episode].sort((a, b) => a.number - b.number)
+                      ).map((epi, index) => {
                         return (
                           <EpisodeLink
                             key={index}
-                            to={`/play/${epi.id}/${id}/${index + 1}`}
+                            to={`/play/${
+                              toggleDub ? epi.id : epi.id.slice(0, -3) + "dub"
+                            }/${id}/${epi.number}`}
                           >
-                            Episode {index + 1}
-                          </EpisodeLink>
-                        );
-                      })}
-                    {episode?.length > 0 &&
-                      !toggleDub &&
-                      episode?.map((epi, index) => {
-                        return (
-                          <EpisodeLink
-                            key={index}
-                            to={`/play/${epi.id.slice(0, -3) + "dub"}/${id}/${
-                              index + 1
-                            }`}
-                          >
-                            Episode {index + 1}
+                            Episode {epi.number}
                           </EpisodeLink>
                         );
                       })}
@@ -426,16 +416,18 @@ function MalAnimeDetails() {
                 {width <= 600 && (
                   <Episodes>
                     {episode?.length > 0 &&
-                      episode?.map((epi, index) => {
-                        return (
-                          <EpisodeLink
-                            key={index}
-                            to={`/play/${epi.id}/${id}/${index + 1}`}
-                          >
-                            {index + 1}
-                          </EpisodeLink>
-                        );
-                      })}
+                      [...episode]
+                        .sort((a, b) => a.number - b.number)
+                        .map((epi, index) => {
+                          return (
+                            <EpisodeLink
+                              key={index}
+                              to={`/play/${epi.id}/${id}/${epi.number}`}
+                            >
+                              {epi.number}
+                            </EpisodeLink>
+                          );
+                        })}
                   </Episodes>
                 )}
               </Episode>

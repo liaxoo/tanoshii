@@ -107,7 +107,7 @@ function WatchAnimeV2() {
 
       await axios
         .get(
-          `${process.env.REACT_APP_BACKEND_URL}/episodes/${id}?provider=zoro`
+          `https://tanoshii-backend.vercel.app/meta/anilist/episodes/${id}?provider=zoro`
         )
         .catch((err) => {
           toast.error(
@@ -268,88 +268,34 @@ function WatchAnimeV2() {
                         }}
                       ></IconContext.Provider>
                     )}
-                    {width > 600 && (
-                      <IconContext.Provider
-                        value={{
-                          size: "1.3rem",
-                          style: {
-                            verticalAlign: "middle",
-                            marginBottom: "0.2rem",
-                            marginLeft: "0.3rem",
-                          },
-                        }}
-                      >
-                        <EpisodeLinks
-                          to={
-                            localStorage.getItem("dub") === "false"
-                              ? `/play/${
-                                  episodes[parseInt(episode) - 1].id
-                                }/${id}/${parseInt(episode) - 1}`
-                              : `/play/${
-                                  episodes[parseInt(episode) - 1].id.slice(
-                                    0,
-                                    -3
-                                  ) + "dub"
-                                }/${id}/${parseInt(episode) - 1}`
-                          }
-                          style={
-                            parseInt(episode) === 1
-                              ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                              : {}
-                          }
-                        >
-                          <HiArrowSmLeft />
-                          Previous
-                        </EpisodeLinks>
-
-                        <EpisodeLinks
-                          to={
-                            localStorage.getItem("dub") === "true"
-                              ? `/play/${
-                                  episodes[episode - 1].id.slice(0, -3) + "dub"
-                                }/${id}/${parseInt(episode) + 1}`
-                              : `/play/${episodes[episode - 1].id}/${id}/${
-                                  parseInt(episode) + 1
-                                }`
-                          }
-                          style={
-                            parseInt(episode) === parseInt(episodes.length)
-                              ? {
-                                  pointerEvents: "none",
-                                  color: "rgba(255,255,255, 0.2)",
-                                }
-                              : {}
-                          }
-                        >
-                          Next
-                          <HiArrowSmRight />
-                        </EpisodeLinks>
-                      </IconContext.Provider>
-                    )}
                   </EpisodeButtons>
                 </div>
                 <EpisodesWrapper>
                   <p>Episodes</p>
                   <Episodes>
-                    {[...Array(parseInt(episodes.length))].map((x, i) => (
-                      <EpisodeLink
-                        to={`/play/${
-                          localStorage.getItem("dub") === "true"
-                            ? episodes[i].id.slice(0, -3) + "dub"
-                            : episodes[i].id
-                        }/${id}/${parseInt(i) + 1}`}
-                        style={
-                          i + 1 <= parseInt(episode)
-                            ? { backgroundColor: "#7676ff" }
-                            : {}
-                        }
-                      >
-                        {i + 1}
-                      </EpisodeLink>
-                    ))}
+                    {[...Array(parseInt(episodes.length))]
+                      .sort((a, b) => episodes[a]?.number - episodes[b]?.number)
+                      .map((x, i) => {
+                        const sortedIndex = episodes.findIndex(
+                          (ep) => ep.number === i + 1
+                        );
+                        return (
+                          <EpisodeLink
+                            to={`/play/${
+                              localStorage.getItem("dub") === "true"
+                                ? episodes[sortedIndex].id.slice(0, -3) + "dub"
+                                : episodes[sortedIndex].id
+                            }/${id}/${parseInt(i) + 1}`}
+                            style={
+                              i + 1 <= parseInt(episode)
+                                ? { backgroundColor: "#7676ff" }
+                                : {}
+                            }
+                          >
+                            {i + 1}
+                          </EpisodeLink>
+                        );
+                      })}
                   </Episodes>
                 </EpisodesWrapper>
               </VideoPlayerWrapper>
